@@ -1,0 +1,14 @@
+{
+  "days_per_28day_dispense": 28,
+  "first_year_3m_persistence": 0.87,
+  "first_year_6m_persistence": 0.73,
+  "first_year_9m_persistence": 0.61,
+  "first_year_12m_persistence": 0.51,
+  "us_nondiabetic_persistence_12m": 0.352,
+  "us_nondiabetic_persistence_24m": 0.156,
+  "gap_days_after_runout": 60,
+  "restart_window_days": 90,
+  "restart_in_window_fraction": 0.25,
+  "stop_reduction": 0.0,
+  "postrestart_stop_hazard_multiplier": 1.0
+}

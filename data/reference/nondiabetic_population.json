@@ -1,0 +1,34 @@
+{
+  "source": "user-supplied public KNHANES2024 HN24_ALL.sav",
+  "sha256": "72ef4df863a2700e593f3bdf734244d5ab3caabd7459c221b1be04ad58fda12b",
+  "strata": 27,
+  "PSUs": 192,
+  "design_df": 165,
+  "old_all_adult_diagnosis_control": {
+    "n_domain": 5925,
+    "n_positive": 834,
+    "weighted_denominator": 43666206.91888015,
+    "weighted_positive": 6156280.139531369,
+    "percent": 14.098499901692977,
+    "se_pp": 0.5430928975230576,
+    "ci95_low": 13.026192503444364,
+    "ci95_high": 15.170807299941588
+  },
+  "definition": "Age>=19, valid BMI, pregnancy respondents excluded. nonDM: DE1_DG=0 AND HE_DM_HBA1C in {1,2}; DM: positive diagnosis or exam diabetes; otherwise unknown. Proxies not clinical eligibility bounds.",
+  "populations": {
+    "diagnosis_proxy": {
+      "all": 6121768.909415649,
+      "nonDM": 4057324.6194990827,
+      "DM": 1727635.3751733908,
+      "unknown_DM": 336808.914743175
+    },
+    "diagnosis_exam_proxy": {
+      "all": 7511242.874723423,
+      "nonDM": 5281242.279473914,
+      "DM": 1878520.3960401723,
+      "unknown_DM": 351480.19920933654
+    }
+  },
+  "no_Wegovy_history_observed": true,
+  "survey_domains_not_actual_insured_cohort": true
+}

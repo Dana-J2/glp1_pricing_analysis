@@ -1,0 +1,23 @@
+항목,값·규칙,구분,집단·설명·한계,근거
+Mailhac 2026 3m persistence,0.87,관찰문헌,"JAMA Network Open 2026, n=157822; Denmark first-time semaglutide obesity-management initiators",https://jamanetwork.com/journals/jamanetworkopen/fullarticle/2853380
+Mailhac 2026 6m persistence,0.73,관찰문헌,Same population; 60-day grace for dispensing gap,https://jamanetwork.com/journals/jamanetworkopen/fullarticle/2853380
+Mailhac 2026 9m persistence,0.61,관찰문헌,Same study,https://jamanetwork.com/journals/jamanetworkopen/fullarticle/2853380
+Mailhac 2026 12m persistence,0.51,관찰문헌,Same study,https://jamanetwork.com/journals/jamanetworkopen/fullarticle/2853380
+Rodriguez 2025 non-T2D persistence 1yr,0.352,관찰문헌,"US multi-GLP-1 cohort, not pure Wegovy",https://jamanetwork.com/journals/jamanetworkopen/fullarticle/2829779
+Rodriguez 2025 non-T2D persistence 2yr,0.156,관찰문헌,Conditional 12-24m ratio 0.156/0.352,https://jamanetwork.com/journals/jamanetworkopen/fullarticle/2829779
+Mailhac reinitiation window proportion,0.25,문헌 근사,"Approximately 1 in 4 discontinuers reinitiated within 3 months, conditional on discontinuation",https://jamanetwork.com/journals/jamanetworkopen/fullarticle/2853380
+Gap threshold 60 days,60,문헌 정의,60 days without available medication; modeled after runout,https://jamanetwork.com/journals/jamanetworkopen/fullarticle/2853380
+Dispense cadence 28 days,28,상품 구조/모형 가정,"One pen is a 28-day supply, four weekly uses",Team Notion 특약 설계
+Months to days: 365 days/year rounded half-up,"3m=91,6m=183,9m=274,12m=365",연구팀 계산 규칙,Calendar-month anniversary not used; reproducible study-time mapping,Team Notion 성환 — 치료 지속·중단·재개 연결
+0-12m linear survival interpolation,linear,연구팀 계산 규칙,"Piecewise linear S(t), not constant hazard",Team Notion 성환 — 치료 지속·중단·재개 연결
+12-24m constant stop hazard,-log(0.156/0.352)/365,연구팀 계산 규칙,Conditional 12-24 persistence linked to Denmark 12m point,Team Notion 성환 — 치료 지속·중단·재개 연결
+Beyond 24 months,reuse 12-24m hazard,연구팀 가정,No external >24m semaglutide-specific curve,Team Notion 성환 — 치료 지속·중단·재개 연결
+Restart gap,60,문헌 기반+구현 규칙,First eligible 60 days after last 28-day supply runs out,Team Notion 성환 — 치료 지속·중단·재개 연결
+Restart opportunity,90,문헌 근사+구현 규칙,"Within this 90-day window, cumulative restart probability 25%",Team Notion 성환 — 치료 지속·중단·재개 연결
+After restart window,no further restart,연구팀 가정,Paths that miss a 90-day opportunity stay off for that stop episode,Team Notion 성환 — 치료 지속·중단·재개 연결
+After restart persistence,reset episode survival clock,연구팀 가정,Apply first-episode persistence curve to resumed course,Team Notion 성환 — 치료 지속·중단·재개 연결
+Repeat stop/restart,repeat identical cycle,연구팀 가정,Keep separate dispensing episodes,Team Notion 성환 — 치료 지속·중단·재개 연결
+stop_reduction,0,기준 가정,Scale daily conditional discontinuation probability by 1-stop_reduction,Team Notion 성환 — 치료 지속·중단·재개 연결
+postrestart_stop_hazard_multiplier,1,기준 가정,Scale restart episode daily conditional discontinuation probability,Team Notion 성환 — 치료 지속·중단·재개 연결
+"Death, lapse, payout, rider termination",not modeled,담당 범위,Handled only by integrating pricing module,Team Notion 특약 설계
+Observed 60-day-gap event vs simulated stop,approximated,모형 한계,Clinical discontinuation recognized after 60-day grace; continuous persistence mapped to 28-day runout boundaries; on-treatment is possession-based,This research implementation
