@@ -1,0 +1,31 @@
+{
+  "version": "benefit_limit_product_comparison_v1",
+  "analysis_type": "product_condition_comparison",
+  "benefit_amounts_krw": [100000, 150000, 200000],
+  "max_claims_values": [6, 13, 26],
+  "waiting_days": 90,
+  "decision_horizon_units": 13,
+  "target_profit_margins": [0.05, 0.1],
+  "pricing_start_scenario": "base",
+  "start_probability_path": "yes",
+  "start_rate_scenarios": [
+    "market_low",
+    "base",
+    "market_high",
+    "response_zero",
+    "response_high",
+    "combined_stress"
+  ],
+  "treatment_scenario_config": "config/treatment_scenarios.json",
+  "baseline_design_id": "benefit100k_max13_wait90",
+  "baseline_regression": {
+    "target_5pct_rounded_premium_krw": 2965,
+    "target_10pct_rounded_premium_krw": 3141,
+    "target_10pct_start_base_profit_pv_krw": 31119062.630155027,
+    "target_10pct_start_response_high_profit_pv_krw": 10592211.430450737,
+    "target_10pct_start_combined_stress_profit_pv_krw": -88605114.06133175,
+    "target_10pct_treatment_combined_stress_profit_pv_krw": 13028029.385903955
+  },
+  "cohort_basis": "initial 1000 policies",
+  "stress_policy": "start-rate and treatment-behavior stresses applied separately; no 6x13 cross stress"
+}

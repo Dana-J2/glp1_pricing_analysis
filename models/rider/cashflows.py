@@ -62,7 +62,7 @@ def project_cashflows(rows, mortality, settings=CashflowSettings(), treatment=Pa
     A=min(T+1, settings.waiting_days+D*(M+1)+2)
     K=treatment.gap_days_after_runout+treatment.restart_window_days
     on=np.zeros((M,A,2));off=np.zeros((M,K));expired=np.zeros(M)
-    naive=settings.initial_policies;dead=exhausted=0.;paid_cum=starts_cum=0.
+    naive=settings.initial_policies;dead=exhausted=0.;paid_cum=starts_cum=recipients_cum=0.
     survival=[episode_survival(A,treatment,1.),episode_survival(A,treatment,treatment.postrestart_stop_hazard_multiplier)]
     due=np.arange(D,A,D)
     stop_q=np.stack([1-s[due]/s[due-D] for s in survival],axis=1)
@@ -91,13 +91,14 @@ def project_cashflows(rows, mortality, settings=CashflowSettings(), treatment=Pa
         resumed=resumes.sum(axis=1);on[:,0,1]+=resumed
         # Dispense at episode start, restart and surviving 28-day boundaries.
         due_all=np.arange(0,A,D)
-        dispense=float(on[:,due_all,:].sum());paid=exhaust_today=0.
+        dispense=float(on[:,due_all,:].sum());paid=exhaust_today=new_recipients=0.
         if day>=settings.waiting_days:
             fills=on[:,due_all,:].copy()
-            paid=float(fills.sum());exhaust_today=float(fills[-1].sum())
+            paid=float(fills.sum());new_recipients=float(fills[0].sum())
+            exhaust_today=float(fills[-1].sum())
             on[:,due_all,:]=0.
             on[1:,due_all,:]+=fills[:-1]
-            exhausted+=exhaust_today;paid_cum+=paid
+            exhausted+=exhaust_today;paid_cum+=paid;recipients_cum+=new_recipients
         # Refund [exhaustion day, next payment day); same-day exhaustion refunds all.
         frac=(next_pay-dt).days/(next_pay-last_pay).days
         refund_units=exhaust_today*frac if settings.refund_unused else 0.
@@ -121,8 +122,10 @@ def project_cashflows(rows, mortality, settings=CashflowSettings(), treatment=Pa
         if abs(mass_error)>1e-7*max(1,settings.initial_policies):raise AssertionError('인원 합계')
         result.append(dict(date=dt.isoformat(),elapsed_day=day,active_open=float(active_open),
             new_starters=float(new),restarts=float(resumed.sum()),dispenses=dispense,paid_claims=paid,
-            exhausted_today=exhaust_today,deaths_today=float(death_today),active_close=float(active_close),
+            new_recipients=new_recipients,exhausted_today=exhaust_today,
+            deaths_today=float(death_today),active_close=float(active_close),
             naive_close=float(naive),cumulative_starts=float(starts_cum),cumulative_paid_claims=float(paid_cum),
+            cumulative_recipients=float(recipients_cum),
             cumulative_exhausted=float(exhausted),cumulative_deaths=float(dead),matured_today=0.,
             premium_units=float(premium_units),refund_fraction=float(frac),refund_units=float(refund_units),
             acquisition_units=float(acquisition_units),collection_units=float(collection_units),
@@ -133,6 +136,7 @@ def project_cashflows(rows, mortality, settings=CashflowSettings(), treatment=Pa
     terminal={k:0. for k in result[-1]}
     terminal.update(date=end.isoformat(),elapsed_day=T,active_open=float(active_close),
         cumulative_starts=float(starts_cum),cumulative_paid_claims=float(paid_cum),
+        cumulative_recipients=float(recipients_cum),
         cumulative_exhausted=float(exhausted),cumulative_deaths=float(dead),matured_today=float(active_close),
         discount=(1+settings.interest)**(-T/365.),mass_error=float(settings.initial_policies-active_close-dead-exhausted))
     result.append(terminal)
@@ -144,7 +148,8 @@ def summarize(rows,initial_policies):
           'claim_expense_krw','maintenance_krw','acquisition_fixed_krw','fixed_outflow_krw','net_premium_units']
     out={f'pv_{k}':sum(r[k]*r['discount'] for r in rows) for k in keys}
     out.update(initial_policies=initial_policies,total_starts=rows[-1]['cumulative_starts'],
-        total_paid_claims=rows[-1]['cumulative_paid_claims'],exhausted=rows[-1]['cumulative_exhausted'],
+        recipients=rows[-1]['cumulative_recipients'],total_paid_claims=rows[-1]['cumulative_paid_claims'],
+        exhausted=rows[-1]['cumulative_exhausted'],
         deaths=rows[-1]['cumulative_deaths'],matured=rows[-1]['matured_today'],
         max_mass_error=max(abs(r['mass_error']) for r in rows))
     return out

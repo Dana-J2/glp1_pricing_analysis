@@ -34,6 +34,7 @@
 - collection_units: 수금비 γG 중 G의 계수.
 - fixed_outflow_krw: 정액 급부+심사비+월 유지비+계약 체결 고정비.
 - net_premium_units: 위 수입계수에서 반환·비례사업비 계수를 뺀 값.
+- new_recipients: 지급횟수 0 상태에서 당일 최초 지급을 받은 고유 계약 수. 누적값은 시작자와 별도로 보장 수급자 비율에 사용한다.
 
 실제 G를 정하면 날짜별 순현금흐름은 `G × net_premium_units − fixed_outflow_krw`이다. 초기 단계에서는 G에 따른 가입 행동 변화는 넣지 않는다.
 

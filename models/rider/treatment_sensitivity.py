@@ -75,8 +75,8 @@ def analyze_treatment_scenarios(*,settings,start_rows,mortality,
     """상품·시작률을 외부에서 받아 재사용 가능한 치료 민감도를 계산한다."""
     cases=build_parameter_cases(base_treatment_config,scenario_definitions)
     margins=[float(x) for x in target_profit_margins]
-    if margins!=sorted(set(margins)) or 0 not in margins:
-        raise ValueError('목표이익률은 중복 없이 오름차순이며 0%를 포함해야 합니다')
+    if not margins or margins!=sorted(set(margins)):
+        raise ValueError('목표이익률은 하나 이상이며 중복 없이 오름차순이어야 합니다')
 
     paths={};summaries={};path_stats={}
     for case in cases:
