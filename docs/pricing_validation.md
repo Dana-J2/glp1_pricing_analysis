@@ -3,6 +3,7 @@
 ## 결과
 가입자 1인당 월 순보험료 2,006.864219원, 월 영업보험료 2,807.047037원. 원 단위 올림은 2,808원이다.
 가정은 config/cashflows.json 및 config/treatment.json, 시작률은 base 시나리오. 별도의 목표이익·자본비용 할증은 없다.
+이 기존 결과는 목표이익률 0% 비교 기준으로 유지한다. 5%·10% 가격과 확정 보험료 경험 비교는 [profit_analysis.md](profit_analysis.md)를 참고한다.
 
 ## 산식
 순보험료는 기대 급부 현가를 (납입현가 − 단위 반환현가)로 나눈다. 순보험료에 비례한 반환을 가정한 사업비 제외 비교값이다. 실제 계약의 반환은 영업보험료에 비례한다.
@@ -24,7 +25,7 @@
 | 차이 | 0.00 |
 
 월 2,808원 올림 시 잔차는 1,000명 기준 현가 약 88,800.89원이다. 원 단위 올림에 따른 차이이며 목표이익으로 설정한 금액이 아니다.
-산출 검증 17개·전체 단위 테스트 38개 통과. 경험 가정 변경 시 수익성·준비금·자본 검증은 포함하지 않는다.
+기존 산출 검증 17개와 목표이익 분석 검증 9개, 전체 단위 테스트 43개를 통과했다. 경험 시작률별 수지는 별도 분석에 포함하지만 준비금·자본 검증은 포함하지 않는다.
 
 ## 재실행
 저장소 루트에서:
@@ -33,6 +34,7 @@ python -m models.start_rate.run
 python -m models.rider.cashflows
 python -m models.rider.pricing
 python -m models.rider.validate_pricing
+python -m models.rider.profit_analysis
 python -m unittest discover -s tests -v
 ```
 pricing을 실행하면 기준 보험료 파일을 새로 산출한다. 향후 경험 시나리오 수지 검증에서는 이 명령으로 기준 보험료를 덮어쓰지 않고 이미 확정한 가격을 고정해야 한다.

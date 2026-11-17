@@ -1,0 +1,17 @@
+{
+  "version": "target_profit_and_fixed_premium_v1",
+  "pricing_scenario": "base",
+  "target_profit_margins": [0.0, 0.05, 0.1],
+  "experience_scenarios": [
+    "market_low",
+    "base",
+    "market_high",
+    "response_zero",
+    "response_high",
+    "combined_stress"
+  ],
+  "scenario_comparison_uses_rounded_premium": true,
+  "cohort_basis": "initial 1000 policies",
+  "profit_margin_definition": "(premium income PV - total outflow PV) / premium income PV",
+  "scope": "research cashflow margin excluding tax, capital cost, reserves and investment income"
+}
