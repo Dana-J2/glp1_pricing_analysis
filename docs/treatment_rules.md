@@ -65,4 +65,8 @@ python -m unittest discover -s tests -v
 - `data/reference/treatment_sources.csv`: 기존 근거와 수정된 계산 규칙
 - `outputs/start_rate/`: 해인 시작률 입력
 
-현재 단계에서는 보험료·수지는 산출하지 않았다.
+치료 모듈 단독 실행은 보험료·수지를 산출하지 않으며, 계약 현금흐름 모듈이 이를 연결한다.
+
+## 치료 행태 민감도 연결
+
+`config/treatment_scenarios.json`의 13개 경험 가정은 기준 `Parameters`를 매번 새로 복사해 `stop_reduction`, `restart_in_window_fraction`, `postrestart_stop_hazard_multiplier`만 변경한다. `models.rider.treatment_sensitivity`가 공통 계약 현금흐름 엔진으로 경로를 다시 계산하고 확정 보험료 수지를 평가한다. 여기서 마지막 키는 이름과 달리 재개 후 일별 조건부 중단확률 배수라는 위 규칙을 따른다.

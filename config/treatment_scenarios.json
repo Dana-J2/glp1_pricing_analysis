@@ -1,0 +1,107 @@
+{
+  "version": "treatment_behavior_sensitivity_v1",
+  "analysis_type": "treatment_behavior_sensitivity",
+  "pricing_start_scenario": "base",
+  "start_probability_path": "yes",
+  "target_profit_margins": [0.0, 0.05, 0.1],
+  "product_basis": {
+    "product_id": "base_benefit100k_max13_wait90",
+    "benefit": 100000.0,
+    "max_claims": 13,
+    "waiting_days": 90,
+    "decision_horizon_units": 13,
+    "reference_rounded_premiums_by_target": {
+      "0": 2808,
+      "5": 2965,
+      "10": 3141
+    }
+  },
+  "experience_scope": "base start rate fixed; treatment persistence and restart only",
+  "scenarios": [
+    {
+      "scenario_id": "treatment_base",
+      "display_name_ko": "기준",
+      "family": "baseline",
+      "overrides": {}
+    },
+    {
+      "scenario_id": "treatment_stop_reduction_10",
+      "display_name_ko": "중단 감소 10%",
+      "family": "stop_reduction",
+      "overrides": {"stop_reduction": 0.1}
+    },
+    {
+      "scenario_id": "treatment_stop_reduction_20",
+      "display_name_ko": "중단 감소 20%",
+      "family": "stop_reduction",
+      "overrides": {"stop_reduction": 0.2}
+    },
+    {
+      "scenario_id": "treatment_stop_reduction_30",
+      "display_name_ko": "중단 감소 30%",
+      "family": "stop_reduction",
+      "overrides": {"stop_reduction": 0.3}
+    },
+    {
+      "scenario_id": "treatment_restart_0",
+      "display_name_ko": "재개 0%",
+      "family": "restart_fraction",
+      "overrides": {"restart_in_window_fraction": 0.0}
+    },
+    {
+      "scenario_id": "treatment_restart_15",
+      "display_name_ko": "재개 15%",
+      "family": "restart_fraction",
+      "overrides": {"restart_in_window_fraction": 0.15}
+    },
+    {
+      "scenario_id": "treatment_restart_40",
+      "display_name_ko": "재개 40%",
+      "family": "restart_fraction",
+      "overrides": {"restart_in_window_fraction": 0.4}
+    },
+    {
+      "scenario_id": "treatment_restart_50",
+      "display_name_ko": "재개 50%",
+      "family": "restart_fraction",
+      "overrides": {"restart_in_window_fraction": 0.5}
+    },
+    {
+      "scenario_id": "treatment_postrestart_multiplier_075",
+      "display_name_ko": "재개 후 배수 0.75",
+      "family": "postrestart_stop_probability_multiplier",
+      "overrides": {"postrestart_stop_hazard_multiplier": 0.75}
+    },
+    {
+      "scenario_id": "treatment_postrestart_multiplier_125",
+      "display_name_ko": "재개 후 배수 1.25",
+      "family": "postrestart_stop_probability_multiplier",
+      "overrides": {"postrestart_stop_hazard_multiplier": 1.25}
+    },
+    {
+      "scenario_id": "treatment_postrestart_multiplier_150",
+      "display_name_ko": "재개 후 배수 1.50",
+      "family": "postrestart_stop_probability_multiplier",
+      "overrides": {"postrestart_stop_hazard_multiplier": 1.5}
+    },
+    {
+      "scenario_id": "treatment_combined_stress",
+      "display_name_ko": "치료 행태 복합 스트레스",
+      "family": "combined_treatment_behavior",
+      "overrides": {
+        "stop_reduction": 0.2,
+        "restart_in_window_fraction": 0.4,
+        "postrestart_stop_hazard_multiplier": 0.75
+      }
+    },
+    {
+      "scenario_id": "treatment_combined_relief",
+      "display_name_ko": "치료 행태 복합 완화",
+      "family": "combined_treatment_behavior",
+      "overrides": {
+        "restart_in_window_fraction": 0.15,
+        "postrestart_stop_hazard_multiplier": 1.25
+      }
+    }
+  ]
+}

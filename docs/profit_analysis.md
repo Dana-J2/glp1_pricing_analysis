@@ -16,6 +16,8 @@
 
 6개 시나리오는 `market_low`, `base`, `market_high`, `response_zero`, `response_high`, `combined_stress`이다. 현재 차이는 최초 시작률뿐이며 치료 지속·중단·재개 가정은 공통이다. 모든 현가는 최초 가입자 1,000명 기준이고 가격 산출과 같은 연 2.75%로 할인한다.
 
+지속·재개만 변경하는 별도 13개 경험 시나리오는 [treatment_sensitivity.md](treatment_sensitivity.md)를 참고한다. 두 분석은 현재 교차하지 않는다.
+
 ## 실행과 결과
 
 저장소 루트에서 시작률 파일을 먼저 만든 뒤 실행한다.
