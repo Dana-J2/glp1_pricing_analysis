@@ -24,8 +24,8 @@ def calculate_premiums(summary):
 
 
 def main():
-    cfg=json.loads((ROOT/'config/cashflows.json').read_text())
-    params=json.loads((ROOT/'config/treatment.json').read_text())
+    cfg=json.loads((ROOT/'config/cashflows.json').read_text(encoding="utf-8"))
+    params=json.loads((ROOT/'config/treatment.json').read_text(encoding="utf-8"))
     s=CashflowSettings(**cfg);t=Parameters(**params)
     starts=read_starts(ROOT/'outputs/start_rate/start_probabilities.csv','base')
     summary=summarize(project_cashflows(starts,read_mortality(),s,t),s.initial_policies)
@@ -34,7 +34,7 @@ def main():
     result.update(scenario='base',contract_assumptions=cfg,treatment_assumptions=params,
         input_sha256={p:hashlib.sha256((ROOT/p).read_bytes()).hexdigest() for p in inputs},cashflow_summary=summary)
     out=ROOT/'outputs/pricing';out.mkdir(parents=True,exist_ok=True)
-    (out/'base_premium.json').write_text(json.dumps(result,ensure_ascii=False,indent=2))
+    (out/'base_premium.json').write_text(json.dumps(result,ensure_ascii=False,indent=2), encoding="utf-8")
     print(json.dumps({k:v for k,v in result.items() if k not in ['input_sha256','contract_assumptions','treatment_assumptions','cashflow_summary']},ensure_ascii=False,indent=2))
 
 if __name__=='__main__':main()
