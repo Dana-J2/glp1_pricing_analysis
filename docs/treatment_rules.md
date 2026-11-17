@@ -60,9 +60,9 @@ python -m unittest discover -s tests -v
 ## 파일
 - `models/treatment/model.py`: 수정 코드
 - `tests/test_treatment.py`: 12개 테스트
-- `run_all.py`: 전체 결과 재생성
-- `outputs/revision_comparison.csv`: 수정 전후 비교
-- `outputs/source_assumption_register.csv`: 기존 근거와 수정된 계산 규칙
-- `input_reference/`: 해인 시작률 입력
+- `models/treatment/model.py`의 treatment_pathway: 집계 경로 계산
+- `reports/treatment_revision_comparison.csv`: 수정 전후 비교
+- `data/reference/treatment_sources.csv`: 기존 근거와 수정된 계산 규칙
+- `outputs/start_rate/`: 해인 시작률 입력
 
 현재 단계에서는 보험료·수지는 산출하지 않았다.
