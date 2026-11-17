@@ -1,0 +1,18 @@
+{
+  "initial_policies": 1000.0,
+  "entry_age": 49,
+  "sex": "여",
+  "mortality_multiplier": 1.0,
+  "monthly_lapse": 0.0,
+  "death_enabled": true,
+  "waiting_days": 90,
+  "max_claims": 13,
+  "benefit": 100000.0,
+  "acquisition_fixed": 10000.0,
+  "alpha": 0.3,
+  "beta": 500.0,
+  "gamma": 0.02,
+  "claim_cost": 2000.0,
+  "interest": 0.0275,
+  "refund_unused": true
+}

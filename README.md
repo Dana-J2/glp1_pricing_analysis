@@ -7,7 +7,8 @@
 |---|---|
 | `models/start_rate` | 민서 원형·해인 6개 시나리오: 최초 치료 시작률 |
 | `models/treatment` | 성환 치료 경로, 통합 전 v1.1 수정 |
-| `models/rider` | 최초 시작 연결·지급 이력·계약 상태 전이 |
+| `models/rider` | 계약 상태·현금흐름·보험료 산출·검증 |
+| `notebooks` | 현금흐름 실행·결과 확인 |
 | `config` | 시나리오·치료·계약 가정 |
 | `data/reference` | 실행에 필요한 집계 인구·기초 사망률·근거표 |
 | `tests` | 계산 검증 |
@@ -21,10 +22,28 @@
 python -m pip install -r requirements.txt
 python -m models.start_rate.run
 python -m models.rider.start_integration
+python -m models.rider.cashflows
+python -m models.rider.pricing
+python -m models.rider.validate_pricing
 python -m unittest discover -s tests -v
 ```
 시작률 파일은 첫 명령 실행 후 자동 생성됩니다. 중복 일별 CSV, 원본 ZIP, 논문 PDF, 캐시, 이전 버전 전체는 올리지 않았습니다.
 `config/start_scenarios.json`을 직접 수정하고 시작률 명령을 다시 실행합니다.
 
 기존 루트의 사망보험금 노트북과 산출방법서는 그대로 유지했습니다. 산출방법서의 최신 구현 차이는 docs를 참고합니다.
-현재 3단계 지급 횟수·계약 상태 전이까지 구현하고 26개 단위 테스트를 통과했습니다. 전체 10년 상세 상태 모형 실행·월납·반환·사업비·보험료·수지 통합은 다음 단계입니다. 자세한 연결 방법은 [계약 상태](docs/contract_state.md)를 참고합니다.
+## 현재 완료 범위
+- 4단계: 사망·대기기간·지급한도·월납·소진 반환·사업비를 연결한 10년 현금흐름.
+- 5단계 중 기준 보험료 산출과 산출 검증 완료. 경험 수지·시나리오 비교는 아직 진행하지 않음.
+- 월 순보험료 2,006.86원, 월 영업보험료 2,807.05원(원 단위 올림 2,808원).
+- 산출 검증 17개와 단위 테스트 38개 통과. 실제 판매 보험료가 아닌 연구 가정의 수지상등 보험료.
+
+## 먼저 볼 파일
+- [적용 가정·현금흐름](docs/cashflows.md)
+- [현금흐름 노트북](notebooks/04_계약현금흐름.ipynb)
+- [기준 보험료·산출 검증 설명](docs/pricing_validation.md)
+- [보험료 결과 스냅샷](reports/base_premium.json)
+- [검증 결과](reports/pricing_validation.json)
+- [수입·지출 현재가치 표](reports/pricing_pv_breakdown.csv)
+
+노트북은 저장소 루트 또는 notebooks 폴더에서 실행하며, 먼저 시작률 생성 명령을 실행해야 합니다. Jupyter 실행 환경은 별도 준비합니다.
+reports는 현재 가정의 기준 결과이며 입력을 바꾸면 자동 갱신되지 않습니다. 최신 실행 결과는 outputs에 생성됩니다.

@@ -1,0 +1,108 @@
+{
+  "status": "PASS",
+  "checks": [
+    {
+      "check": "입력 일치: config/cashflows.json",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "입력 일치: config/treatment.json",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "입력 일치: outputs/start_rate/start_probabilities.csv",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "입력 일치: data/reference/mortality.csv",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "영업보험료 수지상등",
+      "passed": true,
+      "detail": "1,000명 기준 잔차 0.0000000000원"
+    },
+    {
+      "check": "순보험료 수지상등",
+      "passed": true,
+      "detail": "-0.0000000282원"
+    },
+    {
+      "check": "지출 재구성: benefit",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "지출 재구성: claim_expense",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "지출 재구성: maintenance",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "지출 재구성: acquisition_fixed",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "보험료 계수 재구성: premium",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "보험료 계수 재구성: refund",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "보험료 계수 재구성: acquisition_variable",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "보험료 계수 재구성: collection",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "재구성 현금흐름 균형점 비교",
+      "passed": true,
+      "detail": "2807.04703689원"
+    },
+    {
+      "check": "원 단위 올림 후 잔차 방향",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "만기일 현금흐름 0",
+      "passed": true,
+      "detail": ""
+    }
+  ],
+  "monthly_gross_premium": 2807.0470368896235,
+  "monthly_net_premium": 2006.8642190787155,
+  "pv_gross": {
+    "premium": 277388031.31611216,
+    "benefit": 198198588.92125377,
+    "claim_expense": 3963971.7784250756,
+    "maintenance": 49409223.94080627,
+    "acquisition_fixed": 10000000.0,
+    "acquisition_variable": 10105369.332802644,
+    "collection": 5547760.626322243,
+    "refund": 163116.71650215192,
+    "total_outflow": 277388031.31611216,
+    "balance": 0.0
+  },
+  "pure_balance": -2.8157955966889858e-08,
+  "independently_solved_gross": 2807.0470368896877,
+  "rounded_pv_balance": 88800.88513016701,
+  "scope": "산출 검증; 경험 수지·민감도·자본·준비금 검증 제외"
+}
