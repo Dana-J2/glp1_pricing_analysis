@@ -485,7 +485,9 @@ def build_age_analysis(
                         "sex": sex,
                         "term_years": policy["term_years"],
                         "attained_age": policy["attained_age"],
-                        "issue_age_mode": policy["mode"],
+                        "issue_age_mode": policy["status"],
+                        "product_type": policy["status"],
+                        "status": policy["status"],
                         "target_profit_margin": float(margin),
                         "monthly_net_premium_krw": price["monthly_net_premium_krw"],
                         "monthly_gross_premium_unrounded_krw": price[
@@ -635,8 +637,9 @@ def build_senior_extension_analysis(
                         "sex": sex,
                         "term_years": term_years,
                         "attained_age": policy["attained_age"],
-                        "issue_age_mode": policy["mode"],
+                        "issue_age_mode": policy["status"],
                         "product_type": policy["status"],
+                        "status": policy["status"],
                         "policy_eligible": policy["policy_eligible"],
                         "target_profit_margin": sale_margin,
                         "monthly_net_premium_krw": price["monthly_net_premium_krw"],
@@ -718,7 +721,9 @@ def build_sale_product_age_results(
             continue
         item = dict(row)
         item.update(
+            issue_age_mode="standard_mvp",
             product_type="standard_mvp",
+            status="standard_mvp",
             policy_eligible=True,
             sale_results_scope="representative_standard_ages",
             benefit_per_dispense_krw=100000,
@@ -738,9 +743,208 @@ def build_sale_product_age_results(
     senior = []
     for row in senior_rows:
         item = dict(row)
+        item["issue_age_mode"] = "senior_extension_5year"
+        item["product_type"] = "senior_extension_5year"
+        item["status"] = "senior_extension_5year"
         item["sale_results_scope"] = "all_senior_ages_all_mvp_products"
         senior.append(item)
     return standard + senior
+
+
+def build_sale_product_age_lookup(
+    config: dict[str, Any] | None = None,
+    senior_rows: list[dict[str, Any]] | None = None,
+) -> list[dict[str, Any]]:
+    """판매 가능한 8개 상품×보험나이 19~74세×남녀의 가격 조회표를 만든다.
+
+    19~69세는 실제 10년 경로, 70~74세는 실제 5년 경로를 사용한다.
+    각 상품별 시작률을 다시 생성하며 판매 목표이익률 10%만 저장한다.
+    """
+    config = config or load_mvp_config()
+    rules = load_issue_age_rules()
+    sale_margin = float(rules["sale_target_profit_margin"])
+    if not math.isclose(sale_margin, float(config["sale_target_profit_margin"])):
+        raise ValueError("가입연령·MVP 설정의 판매 목표이익률이 다릅니다")
+
+    base_cashflow = json.loads((ROOT / "config/cashflows.json").read_text())
+    base_treatment = json.loads((ROOT / "config/treatment.json").read_text())
+    treatment = Parameters(**base_treatment)
+    mortality = read_mortality()
+    templates = load_start_templates()
+    standard = rules["standard_product"]
+    rows: list[dict[str, Any]] = []
+
+    for design in build_mvp_designs(config, base_cashflow):
+        start_rows = generate_start_rows(templates["base"], design)["rows"]
+        start_date = start_rows[0]["date"]
+        for issue_age in range(
+            int(standard["minimum_issue_age"]),
+            int(standard["maximum_issue_age"]) + 1,
+        ):
+            policy = validate_issue_age(
+                issue_age, int(standard["term_years"]), mode="standard", rules=rules
+            )
+            for sex in rules["sexes"]:
+                settings = CashflowSettings(
+                    **{**design["settings_config"], "entry_age": issue_age, "sex": sex}
+                )
+                projected = project_cashflows(
+                    start_rows, mortality, settings, treatment
+                )
+                summary = summarize(projected, settings.initial_policies)
+                price = calculate_premiums(summary, sale_margin)
+                initial = settings.initial_policies
+                fixed = price["monthly_gross_premium_rounded_up_krw"]
+                item = design["mvp_config"]
+                rows.append(
+                    {
+                        "product_id": design["design_id"],
+                        "benefit_per_dispense_krw": int(design["benefit"]),
+                        "max_claims": design["max_claims"],
+                        "waiting_days": design["waiting_days"],
+                        "maximum_support_krw": int(design["maximum_support_krw"]),
+                        "decision_horizon_units": design["decision_horizon_units"],
+                        "issue_age": issue_age,
+                        "sex": sex,
+                        "term_years": policy["term_years"],
+                        "attained_age": policy["attained_age"],
+                        "issue_age_mode": policy["status"],
+                        "product_type": policy["status"],
+                        "status": policy["status"],
+                        "policy_eligible": policy["policy_eligible"],
+                        "target_profit_margin": sale_margin,
+                        "monthly_net_premium_krw": price["monthly_net_premium_krw"],
+                        "monthly_gross_premium_unrounded_krw": price[
+                            "monthly_gross_premium_krw"
+                        ],
+                        "monthly_gross_premium_rounded_up_krw": fixed,
+                        "unrounded_achieved_profit_margin": price[
+                            "achieved_profit_margin"
+                        ],
+                        "rounded_achieved_profit_margin": price[
+                            "rounded_achieved_profit_margin"
+                        ],
+                        "expected_benefit_pv_per_contract_krw": summary[
+                            "pv_benefit_krw"
+                        ]
+                        / initial,
+                        "expected_paid_claims_per_contract": summary[
+                            "total_paid_claims"
+                        ]
+                        / initial,
+                        "recipient_ratio": summary["recipients"] / initial,
+                        "exhaustion_ratio": summary["exhausted"] / initial,
+                        "expected_deaths_per_1000_contracts": summary["deaths"],
+                        "fixed_premium_used_for_stress_krw": fixed,
+                        "discontinuation_method": "default_overall_49pct",
+                        "annual_discontinuation_probability": 0.49,
+                        "age_specific_discontinuation_enabled": False,
+                        "start_rate_age_assumption": "common_by_age",
+                        "restart_rate_age_assumption": "common_by_age",
+                        "sex_difference_scope": "mortality_only",
+                        "lapse_rate": settings.monthly_lapse,
+                        "contract_start_date": start_date,
+                        "contract_end_date_exclusive": projected[-1]["date"],
+                        "calendar_days_in_term": len(start_rows),
+                        "risk_warning": item.get("risk_warning") or "none",
+                        "cohort_basis": "initial 1000 policies",
+                    }
+                )
+
+    if senior_rows is None:
+        senior_rows = build_senior_extension_analysis(config)
+    lookup_fields = list(rows[0])
+    for source in senior_rows:
+        item = dict(source)
+        item["issue_age_mode"] = "senior_extension_5year"
+        item["product_type"] = "senior_extension_5year"
+        item["status"] = "senior_extension_5year"
+        item["risk_warning"] = item.get("risk_warning") or "none"
+        rows.append({field: item[field] for field in lookup_fields})
+    return rows
+
+
+def validate_sale_product_age_lookup(
+    rows: list[dict[str, Any]],
+) -> dict[str, Any]:
+    checks: list[dict[str, Any]] = []
+    keys = {(r["product_id"], r["issue_age"], r["sex"]) for r in rows}
+    _check(checks, "판매가격 조회표 896개 고유 조합", len(rows) == len(keys) == 896)
+    _check(
+        checks,
+        "판매 목표이익률 10%만 사용",
+        all(math.isclose(float(r["target_profit_margin"]), 0.10) for r in rows),
+    )
+    _check(
+        checks,
+        "가입연령별 보험기간·상품상태 일치",
+        all(
+            (
+                19 <= int(r["issue_age"]) <= 69
+                and int(r["term_years"]) == 10
+                and r["issue_age_mode"] == r["product_type"] == r["status"] == "standard_mvp"
+            )
+            or (
+                70 <= int(r["issue_age"]) <= 74
+                and int(r["term_years"]) == 5
+                and r["issue_age_mode"] == r["product_type"] == r["status"] == "senior_extension_5year"
+            )
+            for r in rows
+        ),
+    )
+    _check(
+        checks,
+        "75세 이상 제외·보장종료연령 79세 이하",
+        all(int(r["issue_age"]) <= 74 and int(r["attained_age"]) <= 79 for r in rows),
+    )
+    _check(
+        checks,
+        "상품 8개와 성별·연령 조합 완전성",
+        len({r["product_id"] for r in rows}) == 8
+        and {r["sex"] for r in rows} == {"여", "남"}
+        and {int(r["issue_age"]) for r in rows} == set(range(19, 75)),
+    )
+    required = (
+        "product_id",
+        "issue_age",
+        "sex",
+        "term_years",
+        "issue_age_mode",
+        "product_type",
+        "status",
+        "target_profit_margin",
+        "monthly_gross_premium_rounded_up_krw",
+        "contract_start_date",
+        "contract_end_date_exclusive",
+    )
+    _check(
+        checks,
+        "필수 조회 필드 결측 없음",
+        all(r.get(field) not in (None, "") for r in rows for field in required),
+    )
+    reference = next(
+        r
+        for r in rows
+        if r["product_id"] == "benefit100k_max13_wait90"
+        and int(r["issue_age"]) == 49
+        and r["sex"] == "여"
+    )
+    _check(
+        checks,
+        "49세 여성 기준상품 10% 보험료 3,141원",
+        int(reference["monthly_gross_premium_rounded_up_krw"]) == 3141,
+    )
+    _check(
+        checks,
+        "올림 전 목표이익률 10% 달성",
+        max(abs(float(r["unrounded_achieved_profit_margin"]) - 0.10) for r in rows)
+        < 1e-12,
+    )
+    return {
+        "status": "PASS" if all(item["passed"] for item in checks) else "FAIL",
+        "checks": checks,
+        "summary": {"row_count": len(rows), "unique_key_count": len(keys)},
+    }
 
 
 def build_extension_policy_comparison() -> list[dict[str, Any]]:
@@ -944,8 +1148,10 @@ def save_results(
     exploratory_age_rows: list[dict[str, Any]],
     senior_rows: list[dict[str, Any]],
     sale_rows: list[dict[str, Any]],
+    sale_lookup_rows: list[dict[str, Any]] | None,
     validation: dict[str, Any],
     senior_validation: dict[str, Any],
+    sale_lookup_validation: dict[str, Any] | None,
     source_validation: dict[str, Any] | None,
 ) -> None:
     _write_csv(DERIVED_DIR / "mvp_product_options_summary.csv", mvp_rows)
@@ -955,7 +1161,14 @@ def save_results(
         exploratory_age_rows,
     )
     _write_csv(DERIVED_DIR / "senior_extension_5year_results.csv", senior_rows)
-    _write_csv(DERIVED_DIR / "sale_product_age_results.csv", sale_rows)
+    _write_csv(
+        DERIVED_DIR / "sale_product_age_representative_summary.csv", sale_rows
+    )
+    if sale_lookup_rows is not None:
+        _write_csv(DERIVED_DIR / "sale_product_age_lookup.csv", sale_lookup_rows)
+    if source_validation is None and REPORT_PATH.exists():
+        previous = json.loads(REPORT_PATH.read_text(encoding="utf-8"))
+        source_validation = previous.get("team_27_source_validation")
     report = {
         "analysis_validation": validation,
         "team_27_source_validation": source_validation,
@@ -964,8 +1177,14 @@ def save_results(
             "data/derived/issue_age_baseline_results.csv",
             "data/derived/issue_age_discontinuation_exploratory_results.csv",
             "data/derived/senior_extension_5year_results.csv",
-            "data/derived/sale_product_age_results.csv",
+            "data/derived/sale_product_age_representative_summary.csv",
+            *(
+                ["data/derived/sale_product_age_lookup.csv"]
+                if sale_lookup_rows is not None
+                else []
+            ),
         ],
+        "sale_product_age_lookup_validation": sale_lookup_validation,
     }
     REPORT_PATH.parent.mkdir(parents=True, exist_ok=True)
     REPORT_PATH.write_text(
@@ -990,7 +1209,12 @@ def save_results(
                 "validation": senior_validation,
                 "output_files": [
                     "data/derived/senior_extension_5year_results.csv",
-                    "data/derived/sale_product_age_results.csv",
+                    "data/derived/sale_product_age_representative_summary.csv",
+                    *(
+                        ["data/derived/sale_product_age_lookup.csv"]
+                        if sale_lookup_rows is not None
+                        else []
+                    ),
                 ],
                 "scope": {
                     "products": 8,
@@ -1020,6 +1244,11 @@ def main() -> None:
     parser.add_argument("--team-pricing-csv", type=Path)
     parser.add_argument("--team-stress-csv", type=Path)
     parser.add_argument("--skip-team-source-validation", action="store_true")
+    parser.add_argument(
+        "--build-sale-lookup",
+        action="store_true",
+        help="8개 상품×19~74세×남녀 896행 판매가격 조회표 생성",
+    )
     args = parser.parse_args()
     mvp_rows, _ = build_mvp_summary()
     source_validation = None
@@ -1039,10 +1268,29 @@ def main() -> None:
         )
         if source_validation["status"] != "PASS":
             raise AssertionError("팀원 27개 조건 CSV 대조 실패")
+    elif (DERIVED_DIR / "mvp_product_options_summary.csv").exists():
+        previous_rows = _read_team_csv(
+            DERIVED_DIR / "mvp_product_options_summary.csv"
+        )
+        previous_match = {
+            row["product_id"]: row.get("source_27_condition_match", "not_checked")
+            for row in previous_rows
+        }
+        for row in mvp_rows:
+            row["source_27_condition_match"] = previous_match.get(
+                row["product_id"], "not_checked"
+            )
     baseline_age_rows = build_age_analysis(use_age_specific_discontinuation=False)
     exploratory_age_rows = build_age_analysis(use_age_specific_discontinuation=True)
     senior_rows = build_senior_extension_analysis()
     sale_rows = build_sale_product_age_results(baseline_age_rows, senior_rows)
+    sale_lookup_rows = None
+    sale_lookup_validation = None
+    if args.build_sale_lookup:
+        sale_lookup_rows = build_sale_product_age_lookup(senior_rows=senior_rows)
+        sale_lookup_validation = validate_sale_product_age_lookup(sale_lookup_rows)
+        if sale_lookup_validation["status"] != "PASS":
+            raise AssertionError("판매가격 조회표 검증 실패")
     validation = validate_analysis(mvp_rows, baseline_age_rows, exploratory_age_rows)
     if validation["status"] != "PASS":
         raise AssertionError("MVP·가입연령 분석 검증 실패")
@@ -1055,8 +1303,10 @@ def main() -> None:
         exploratory_age_rows,
         senior_rows,
         sale_rows,
+        sale_lookup_rows,
         validation,
         senior_validation,
+        sale_lookup_validation,
         source_validation,
     )
     print(
@@ -1067,8 +1317,16 @@ def main() -> None:
                 "exploratory_age_result_count": len(exploratory_age_rows),
                 "senior_extension_result_count": len(senior_rows),
                 "sale_product_age_result_count": len(sale_rows),
+                "sale_product_age_lookup_count": (
+                    len(sale_lookup_rows) if sale_lookup_rows is not None else 0
+                ),
                 "validation": validation["status"],
                 "senior_extension_validation": senior_validation["status"],
+                "sale_product_age_lookup_validation": (
+                    sale_lookup_validation["status"]
+                    if sale_lookup_validation
+                    else "SKIPPED"
+                ),
                 "team_source_validation": (
                     source_validation["status"] if source_validation else "SKIPPED"
                 ),

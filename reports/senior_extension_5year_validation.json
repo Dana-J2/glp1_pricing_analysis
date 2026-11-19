@@ -59,7 +59,8 @@
   },
   "output_files": [
     "data/derived/senior_extension_5year_results.csv",
-    "data/derived/sale_product_age_results.csv"
+    "data/derived/sale_product_age_representative_summary.csv",
+    "data/derived/sale_product_age_lookup.csv"
   ],
   "scope": {
     "products": 8,

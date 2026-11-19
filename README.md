@@ -2,6 +2,8 @@
 
 위고비 확산에 따른 사망보험금 분석과 연구용 약제비 보장 특약 모형입니다.
 
+> 이 저장소의 WE GO FIT은 학술제 연구용 가상 보험상품이며 실제 판매·인가 상품이 아닙니다.
+
 ## 폴더 안내
 | 폴더 | 내용 |
 |---|---|
@@ -13,7 +15,7 @@
 | `data/reference` | 실행에 필요한 집계 인구·기초 사망률·근거표 |
 | `tests` | 계산 검증 |
 | `reports` | 작은 기준 결과 요약 |
-| `docs` | 자료 출처와 변경·연결 규칙 |
+| `docs` | 자료 출처·연결 규칙과 `product` 상품 문서 |
 | `outputs` | 실행 시 생성되는 일별 결과. Git 제외 |
 
 ## 기존 보험계약 영향 분석
@@ -23,7 +25,7 @@
 - [담낭수술 급부 분석](notebooks/impact/03_위고비_담낭수술보험금_국내연구.ipynb): 시장 확산과 특약 귀속에 따른 기대 담낭절제술 급부 증가를 구분합니다.
 - [기존 보험금 종합영향](notebooks/impact/04_위고비_기존보험금_종합영향.ipynb): 공통 시작·치료·생존 모형에서 네 기존 담보의 저·고확산 보험금 현가 변화를 통합합니다.
 
-두 분석은 모두 위고비 시장 확산 시나리오에 따른 기존 보험계약의 기대 급부 변화이며, 특약 가입으로 발생하는 순증 효과와는 구분합니다.
+네 분석은 위고비 시장 확산 시나리오에 따른 기존 보험계약의 기대 급부 변화를 다루며, 특약 가입으로 발생하는 순증 효과와는 구분합니다.
 
 ## 실행 순서
 저장소 루트에서 Python 3.10 이상으로 실행합니다.
@@ -37,16 +39,15 @@ python -m models.rider.validate_pricing
 python -m models.rider.profit_analysis
 python -m models.rider.treatment_sensitivity
 python -m models.rider.product_comparison --stage full
-python -m models.rider.mvp_age_analysis
+python -m models.rider.mvp_age_analysis --build-sale-lookup
 python -m models.impact.existing_claims
 python -m unittest discover -s tests -v
 ```
 시작률 파일은 첫 명령 실행 후 자동 생성됩니다. 중복 일별 CSV, 원본 ZIP, 논문 PDF, 캐시, 이전 버전 전체는 올리지 않았습니다.
 `config/start_scenarios.json`을 직접 수정하고 시작률 명령을 다시 실행합니다.
 
-기존 루트의 사망보험금 노트북은 유지했고, 산출방법서에는 목표이익률 정의와 산식만 추가했습니다. 최신 구현 차이는 docs를 참고합니다.
 ## 현재 완료 범위
-- 4단계: 사망·대기기간·지급한도·월납·소진 반환·사업비를 연결한 10년 현금흐름.
+- 4단계: 사망·대기기간·지급한도·월납·소진 반환·사업비를 연결한 10년형과 실제 5년형 현금흐름.
 - 5단계: 기준 보험료 산출·검증과 목표이익률 0%·5%·10% 가격 및 고정 보험료 경험 수지 비교 완료.
 - 치료 행태: `base` 시작률을 고정한 지속·재개 13개 시나리오와 확정 보험료 3개의 39개 수지 비교 완료.
 - 상품조건: 지급액 3개×지급한도 3개의 가격·혜택과 시작률 108행·치료 행태 234행 분리 스트레스 비교 완료.
@@ -66,12 +67,15 @@ python -m unittest discover -s tests -v
 - [지급액·지급한도 9개 상품조건 비교](docs/product_comparison.md)
 - [MVP 8개 상품조건 선정](docs/mvp_product_selection.md)
 - [가입연령 정책·연령별 탐색](docs/issue_age_policy.md)
+- [WE GO FIT 사업방법서](docs/product/WE_GO_FIT_사업방법서.md) ([DOCX](docs/product/WE_GO_FIT_사업방법서.docx), [PDF](docs/product/WE_GO_FIT_사업방법서.pdf))
+- [WE GO FIT 보험료 산출방법서](docs/product/WE_GO_FIT_산출방법서.md)
 - [기존 담보 보험금 종합영향](docs/existing_claims_impact.md)
 - [MVP 8개 추적 결과](data/derived/mvp_product_options_summary.csv)
 - [기본 가입연령 분석 결과](data/derived/issue_age_baseline_results.csv)
 - [연령별 중단률 탐색 결과](data/derived/issue_age_discontinuation_exploratory_results.csv)
 - [70~74세 5년형 80개 결과](data/derived/senior_extension_5year_results.csv)
-- [판매 가입구조 통합 결과](data/derived/sale_product_age_results.csv)
+- [판매가격 전 연령 조회표 896행](data/derived/sale_product_age_lookup.csv)
+- [대표연령·고령 확장 요약 94행](data/derived/sale_product_age_representative_summary.csv)
 - [고령 확장형 검증 결과](reports/senior_extension_5year_validation.json)
 - [보험료 결과 스냅샷](reports/base_premium.json)
 - [검증 결과](reports/pricing_validation.json)
@@ -79,5 +83,5 @@ python -m unittest discover -s tests -v
 
 노트북은 저장소 루트 또는 notebooks 폴더에서 실행하며, 먼저 시작률 생성 명령을 실행해야 합니다. Jupyter 실행 환경은 별도 준비합니다.
 reports는 현재 가정의 기준 결과이며 입력을 바꾸면 자동 갱신되지 않습니다. 최신 실행 결과는 outputs에 생성됩니다.
-`pricing`은 기본적으로 기존 0% 가격을 산출합니다. 예를 들어 5% 가격만 별도로 산출하려면
+`pricing` 단독 명령의 기본값 0%는 회귀검증용입니다. 판매 후보 조회표는 목표이익률 10%만 사용합니다. 예를 들어 5% 연구가격만 별도로 산출하려면
 `python -m models.rider.pricing --target-profit-margin 0.05`를 실행합니다.

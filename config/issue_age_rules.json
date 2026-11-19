@@ -18,7 +18,7 @@
   "sale_target_profit_margin": 0.10,
   "secondary_research_margin": 0.05,
   "age_75_79": {
-    "status": "research_only",
+    "status": "research_only_not_for_sale",
     "minimum_issue_age": 75,
     "maximum_issue_age": 79
   },

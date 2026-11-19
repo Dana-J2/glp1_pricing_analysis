@@ -19,6 +19,7 @@ from models.rider.issue_age import (
 from models.rider.mvp_age_analysis import (
     build_mvp_designs,
     load_mvp_config,
+    validate_sale_product_age_lookup,
     validate_senior_extension_analysis,
 )
 from models.rider.pricing import calculate_premiums
@@ -128,7 +129,7 @@ class MvpProductAndIssueAgeChecks(unittest.TestCase):
         self.assertEqual(self.mvp_config["sale_target_profit_margin"], 0.10)
         self.assertEqual(self.rules["sale_target_profit_margin"], 0.10)
         self.assertEqual(self.mvp_config["secondary_research_margin"], 0.05)
-        with (ROOT / "data/derived/sale_product_age_results.csv").open(
+        with (ROOT / "data/derived/sale_product_age_lookup.csv").open(
             encoding="utf-8-sig", newline=""
         ) as handle:
             rows = list(csv.DictReader(handle))
@@ -216,7 +217,8 @@ class MvpProductAndIssueAgeChecks(unittest.TestCase):
             "issue_age_baseline_results.csv": 28,
             "issue_age_discontinuation_exploratory_results.csv": 28,
             "senior_extension_5year_results.csv": 80,
-            "sale_product_age_results.csv": 94,
+            "sale_product_age_representative_summary.csv": 94,
+            "sale_product_age_lookup.csv": 896,
         }
         for filename, count in expected.items():
             with (ROOT / "data/derived" / filename).open(
@@ -224,6 +226,36 @@ class MvpProductAndIssueAgeChecks(unittest.TestCase):
             ) as handle:
                 rows = list(csv.DictReader(handle))
             self.assertEqual(len(rows), count)
+
+    def test_sale_lookup_is_complete_unique_and_policy_consistent(self):
+        with (ROOT / "data/derived/sale_product_age_lookup.csv").open(
+            encoding="utf-8-sig", newline=""
+        ) as handle:
+            rows = list(csv.DictReader(handle))
+        typed = []
+        for row in rows:
+            item = dict(row)
+            for field in (
+                "issue_age",
+                "term_years",
+                "attained_age",
+                "monthly_gross_premium_rounded_up_krw",
+            ):
+                item[field] = int(float(item[field]))
+            for field in (
+                "target_profit_margin",
+                "unrounded_achieved_profit_margin",
+            ):
+                item[field] = float(item[field])
+            typed.append(item)
+        validation = validate_sale_product_age_lookup(typed)
+        self.assertEqual(validation["status"], "PASS")
+        self.assertEqual(len(rows), 896)
+        self.assertEqual(
+            len({(r["product_id"], r["issue_age"], r["sex"]) for r in rows}),
+            896,
+        )
+        self.assertTrue(all(value != "" for row in rows for value in row.values()))
 
     def test_tracked_senior_extension_price_and_stress_results(self):
         with (ROOT / "data/derived/senior_extension_5year_results.csv").open(

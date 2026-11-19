@@ -109,6 +109,56 @@
     "data/derived/issue_age_baseline_results.csv",
     "data/derived/issue_age_discontinuation_exploratory_results.csv",
     "data/derived/senior_extension_5year_results.csv",
-    "data/derived/sale_product_age_results.csv"
-  ]
+    "data/derived/sale_product_age_representative_summary.csv",
+    "data/derived/sale_product_age_lookup.csv"
+  ],
+  "sale_product_age_lookup_validation": {
+    "status": "PASS",
+    "checks": [
+      {
+        "check": "판매가격 조회표 896개 고유 조합",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "판매 목표이익률 10%만 사용",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "가입연령별 보험기간·상품상태 일치",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "75세 이상 제외·보장종료연령 79세 이하",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "상품 8개와 성별·연령 조합 완전성",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "필수 조회 필드 결측 없음",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "49세 여성 기준상품 10% 보험료 3,141원",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "올림 전 목표이익률 10% 달성",
+        "passed": true,
+        "detail": ""
+      }
+    ],
+    "summary": {
+      "row_count": 896,
+      "unique_key_count": 896
+    }
+  }
 }

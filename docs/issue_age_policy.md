@@ -100,14 +100,15 @@ $$
 ## 실행 및 결과
 
 ```bash
-python -m models.rider.mvp_age_analysis
+python -m models.rider.mvp_age_analysis --build-sale-lookup
 ```
 
 - 정책 설정: `config/issue_age_rules.json`
 - 기본 49% 중단률 결과: `data/derived/issue_age_baseline_results.csv`
 - 연령별 중단률 탐색: `data/derived/issue_age_discontinuation_exploratory_results.csv`
 - 고령 확장형 80개 결과: `data/derived/senior_extension_5year_results.csv`
-- 판매 가입구조 통합 요약: `data/derived/sale_product_age_results.csv`
+- 판매가격 전 연령 조회표(8개 상품×19~74세×남녀): `data/derived/sale_product_age_lookup.csv`
+- 대표연령·고령 확장 통합 요약: `data/derived/sale_product_age_representative_summary.csv`
 - 고령 확장 검증: `reports/senior_extension_5year_validation.json`
 - 발표용 검토: `notebooks/위고비_MVP_가입연령_검토.ipynb`
 
