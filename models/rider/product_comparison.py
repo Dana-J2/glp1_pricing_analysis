@@ -41,25 +41,39 @@ def _design_id(benefit,max_claims,waiting_days):
     return f'benefit{int(benefit/1000)}k_max{max_claims}_wait{waiting_days}'
 
 
+def build_product_design(*,benefit,max_claims,waiting_days,decision_horizon_units,
+                         base_cashflow_config,product_id=None):
+    """하나의 상품조건을 기존 현금흐름 설정과 연결한다."""
+    settings_config=dict(base_cashflow_config)
+    settings_config.update(
+        benefit=float(benefit),max_claims=int(max_claims),
+        waiting_days=int(waiting_days),
+    )
+    design={
+        'design_id':product_id or _design_id(benefit,max_claims,waiting_days),
+        'benefit':float(benefit),
+        'max_claims':int(max_claims),
+        'waiting_days':int(waiting_days),
+        'decision_horizon_units':int(decision_horizon_units),
+        'maximum_support_krw':float(benefit)*int(max_claims),
+        'settings_config':settings_config,
+        'settings':CashflowSettings(**settings_config),
+    }
+    if design['maximum_support_krw']<=0:
+        raise ValueError('최대 지원금은 양수여야 합니다')
+    return design
+
+
 def build_designs(config,base_cashflow_config):
     designs=[]
     for benefit in config['benefit_amounts_krw']:
         for max_claims in config['max_claims_values']:
-            settings_config=dict(base_cashflow_config)
-            settings_config.update(
-                benefit=float(benefit),max_claims=int(max_claims),
-                waiting_days=int(config['waiting_days']),
-            )
-            designs.append({
-                'design_id':_design_id(benefit,max_claims,config['waiting_days']),
-                'benefit':float(benefit),
-                'max_claims':int(max_claims),
-                'waiting_days':int(config['waiting_days']),
-                'decision_horizon_units':int(config['decision_horizon_units']),
-                'maximum_support_krw':float(benefit)*int(max_claims),
-                'settings_config':settings_config,
-                'settings':CashflowSettings(**settings_config),
-            })
+            designs.append(build_product_design(
+                benefit=benefit,max_claims=max_claims,
+                waiting_days=config['waiting_days'],
+                decision_horizon_units=config['decision_horizon_units'],
+                base_cashflow_config=base_cashflow_config,
+            ))
     if len(designs)!=9 or len({d['design_id'] for d in designs})!=9:
         raise ValueError('지급액 3개×지급한도 3개의 고유 설계가 필요합니다')
     return designs

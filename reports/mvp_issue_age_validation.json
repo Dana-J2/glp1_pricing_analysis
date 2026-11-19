@@ -1,0 +1,112 @@
+{
+  "analysis_validation": {
+    "status": "PASS",
+    "checks": [
+      {
+        "check": "MVP 상품 8개",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "MVP 지급액·한도·대기기간 범위",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "최대 지원금 산식",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "기존 49세 여성 기준 보험료 유지",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "기본·연령별 탐색 결과 행 수",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "기본 중단률 옵션 비활성",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "연령별 중단률 옵션 명시 활성",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "올림 전 목표이익률 달성",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "인원·지급지표 범위",
+        "passed": true,
+        "detail": ""
+      }
+    ]
+  },
+  "team_27_source_validation": {
+    "status": "PASS",
+    "checks": [
+      {
+        "check": "27개 가격·혜택 조건 완전성",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "27개 스트레스 조건 완전성",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "팀원 CSV 결측 없음",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "기존 90일 상품 9개 가격·혜택 일치",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "기존 90일 상품 9개 스트레스 일치",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "MVP 8개 정확 필터",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "현재 엔진의 MVP 8개와 팀원 표 일치",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "기준상품 0%·5%·10% 보험료 재현",
+        "passed": true,
+        "detail": ""
+      }
+    ],
+    "sources": {
+      "pricing_benefit_summary": {
+        "file_name": "WEGOFIT_27개_상품조건_보험료_혜택_요약_20261118.csv",
+        "sha256": "cd6df977168e0f51f12fa3157223132a2ad6f8e96237db800aa2685efb4adce2"
+      },
+      "target_10pct_stress_summary": {
+        "file_name": "WEGOFIT_27개_상품조건_목표10pct_주요스트레스_NPV_20261118.csv",
+        "sha256": "a0b018f513f77bed08bf6e1a60e3d8d3100ef8040a52e856c437a68af9e26068"
+      }
+    }
+  },
+  "output_files": [
+    "data/derived/mvp_product_options_summary.csv",
+    "data/derived/issue_age_baseline_results.csv",
+    "data/derived/issue_age_discontinuation_exploratory_results.csv"
+  ]
+}

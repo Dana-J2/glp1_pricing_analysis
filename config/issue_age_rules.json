@@ -1,0 +1,58 @@
+{
+  "version": "mvp_issue_age_policy_v1",
+  "age_basis": "insurance_age",
+  "minimum_issue_age": 19,
+  "maximum_issue_age": 69,
+  "term_years": 10,
+  "maximum_attained_age": 79,
+  "extension_age_70_74": {
+    "status": "research_or_short_term",
+    "minimum_issue_age": 70,
+    "maximum_issue_age": 74,
+    "term_years": 5
+  },
+  "age_75_79": {
+    "status": "research_only",
+    "minimum_issue_age": 75,
+    "maximum_issue_age": 79
+  },
+  "research_mode": {
+    "explicit_opt_in_required": true,
+    "maximum_entry_age": 79,
+    "attained_age_limit_is_not_a_sales_rule_in_research_mode": true
+  },
+  "representative_product": {
+    "product_id": "benefit100k_max13_wait90",
+    "benefit_per_dispense_krw": 100000,
+    "max_claims": 13,
+    "waiting_days": 90,
+    "decision_horizon_units": 13,
+    "target_profit_margins": [0.05, 0.10]
+  },
+  "evaluation_issue_ages": [19, 29, 44, 59, 60, 64, 69],
+  "sexes": ["여", "남"],
+  "age_specific_discontinuation_exploratory": {
+    "enabled_by_default": false,
+    "method": "power_transform_first_year_persistence_curve_to_age_specific_12m_target",
+    "annual_discontinuation_probability_by_age_band": [
+      {"minimum_age": 19, "maximum_age": 29, "probability": 0.648},
+      {"minimum_age": 30, "maximum_age": 44, "probability": 0.542},
+      {"minimum_age": 45, "maximum_age": 59, "probability": 0.436},
+      {"minimum_age": 60, "maximum_age": 69, "probability": 0.446},
+      {"minimum_age": 70, "maximum_age": 120, "probability": 0.490}
+    ],
+    "common_start_rate_by_age": true,
+    "common_restart_fraction_by_age": true,
+    "sex_difference_applied_to": "mortality_only",
+    "male_discontinuation_rr_1_16_applied": false,
+    "lapse_rate": 0.0,
+    "research_lapse_sensitivities_not_used_as_age_assumptions": [0.01, 0.03],
+    "source": "Mailhac et al., JAMA Network Open 2026",
+    "source_url": "https://jamanetwork.com/journals/jamanetworkopen/fullarticle/2853380"
+  },
+  "documentation_sources": {
+    "mfds_wegovy_label": "https://nedrug.mfds.go.kr/pbp/CCBBB01/getItemDetailCache?cacheSeq=202301388a",
+    "mailhac_2026": "https://jamanetwork.com/journals/jamanetworkopen/fullarticle/2853380",
+    "older_age_dur_reporting": "https://v.daum.net/v/20260729060142264"
+  }
+}

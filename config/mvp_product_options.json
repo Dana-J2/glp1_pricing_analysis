@@ -1,0 +1,113 @@
+{
+  "version": "mvp_product_options_v1",
+  "analysis_type": "explicit_mvp_product_comparison",
+  "decision_horizon_units": 13,
+  "primary_target_profit_margin": 0.10,
+  "secondary_target_profit_margin": 0.05,
+  "regression_target_profit_margin": 0.0,
+  "pricing_start_scenario": "base",
+  "start_probability_path": "yes",
+  "products": [
+    {
+      "product_id": "benefit100k_max6_wait30",
+      "benefit_per_dispense_krw": 100000,
+      "max_claims": 6,
+      "waiting_days": 30,
+      "maximum_support_krw": 600000,
+      "decision_horizon_units": 13,
+      "primary_target_profit_margin": 0.10,
+      "secondary_target_profit_margin": 0.05,
+      "included_in_mvp": true
+    },
+    {
+      "product_id": "benefit100k_max6_wait90",
+      "benefit_per_dispense_krw": 100000,
+      "max_claims": 6,
+      "waiting_days": 90,
+      "maximum_support_krw": 600000,
+      "decision_horizon_units": 13,
+      "primary_target_profit_margin": 0.10,
+      "secondary_target_profit_margin": 0.05,
+      "included_in_mvp": true
+    },
+    {
+      "product_id": "benefit100k_max13_wait30",
+      "benefit_per_dispense_krw": 100000,
+      "max_claims": 13,
+      "waiting_days": 30,
+      "maximum_support_krw": 1300000,
+      "decision_horizon_units": 13,
+      "primary_target_profit_margin": 0.10,
+      "secondary_target_profit_margin": 0.05,
+      "included_in_mvp": true
+    },
+    {
+      "product_id": "benefit100k_max13_wait90",
+      "benefit_per_dispense_krw": 100000,
+      "max_claims": 13,
+      "waiting_days": 90,
+      "maximum_support_krw": 1300000,
+      "decision_horizon_units": 13,
+      "primary_target_profit_margin": 0.10,
+      "secondary_target_profit_margin": 0.05,
+      "included_in_mvp": true
+    },
+    {
+      "product_id": "benefit150k_max6_wait30",
+      "benefit_per_dispense_krw": 150000,
+      "max_claims": 6,
+      "waiting_days": 30,
+      "maximum_support_krw": 900000,
+      "decision_horizon_units": 13,
+      "primary_target_profit_margin": 0.10,
+      "secondary_target_profit_margin": 0.05,
+      "included_in_mvp": true
+    },
+    {
+      "product_id": "benefit150k_max6_wait90",
+      "benefit_per_dispense_krw": 150000,
+      "max_claims": 6,
+      "waiting_days": 90,
+      "maximum_support_krw": 900000,
+      "decision_horizon_units": 13,
+      "primary_target_profit_margin": 0.10,
+      "secondary_target_profit_margin": 0.05,
+      "included_in_mvp": true
+    },
+    {
+      "product_id": "benefit150k_max13_wait30",
+      "benefit_per_dispense_krw": 150000,
+      "max_claims": 13,
+      "waiting_days": 30,
+      "maximum_support_krw": 1950000,
+      "decision_horizon_units": 13,
+      "primary_target_profit_margin": 0.10,
+      "secondary_target_profit_margin": 0.05,
+      "included_in_mvp": true,
+      "risk_warning": "목표이익률 10% 보험료 고정 후 response_high에서 손실"
+    },
+    {
+      "product_id": "benefit150k_max13_wait90",
+      "benefit_per_dispense_krw": 150000,
+      "max_claims": 13,
+      "waiting_days": 90,
+      "maximum_support_krw": 1950000,
+      "decision_horizon_units": 13,
+      "primary_target_profit_margin": 0.10,
+      "secondary_target_profit_margin": 0.05,
+      "included_in_mvp": true,
+      "risk_warning": "목표이익률 10% 보험료 고정 후 response_high에서 손실"
+    }
+  ],
+  "source_27_condition_files": {
+    "pricing_benefit_summary": "WEGOFIT_27개_상품조건_보험료_혜택_요약_20261118.csv",
+    "target_10pct_stress_summary": "WEGOFIT_27개_상품조건_목표10pct_주요스트레스_NPV_20261118.csv",
+    "source_date": "2026-11-18"
+  },
+  "baseline_regression": {
+    "product_id": "benefit100k_max13_wait90",
+    "target_0pct_rounded_premium_krw": 2808,
+    "target_5pct_rounded_premium_krw": 2965,
+    "target_10pct_rounded_premium_krw": 3141
+  }
+}

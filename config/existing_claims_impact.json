@@ -1,0 +1,180 @@
+{
+  "version": "existing_claims_market_impact_v1",
+  "analysis_name_ko": "위고비 시장 확산에 따른 기존 담보 보험금 현가 변화",
+  "analysis": {
+    "initial_cohort": 1000.0,
+    "target_population": "SELECT 유사·비당뇨·위고비 미사용 고위험 가상 가입자",
+    "term_years": 10,
+    "annual_discount_rate": 0.0275,
+    "lapse_rate": 0.0,
+    "effect_years": 3.0,
+    "gallstone_effect_years": 3.0,
+    "trial_exposure_months": 34.2,
+    "trial_followup_months": 39.8,
+    "base_exposure_method": "on_treatment_published",
+    "event_timing": "mid_day",
+    "same_day_sequence": [
+      "first_start",
+      "treatment_continue_stop_restart",
+      "nonfatal_myocardial_infarction",
+      "nonfatal_stroke",
+      "gallstone_and_cholecystectomy",
+      "death",
+      "next_day_and_discount"
+    ]
+  },
+  "start_rate": {
+    "market_scenarios": {
+      "existing_market_low": {
+        "annual_first_people": 60000
+      },
+      "existing_market_high": {
+        "annual_first_people": 180000
+      }
+    },
+    "template": {
+      "status": "conditional_existing_claims_research_assumption_not_estimate",
+      "outside_eligibility_fraction": 0.2,
+      "newly_eligible_fraction_of_valid_market_starts": 0.0,
+      "ever_used_fraction": 0.05,
+      "population_proxy": "diagnosis_proxy",
+      "selection_ratio": 1.0,
+      "annual_market_odds_change": 0.0,
+      "price_per_28days": 400000.0,
+      "benefit_per_28days": 0.0,
+      "waiting_days": 0,
+      "lifetime_payment_limit": 13,
+      "decision_horizon_units": 13,
+      "perceived_benefit_fraction": 0.0,
+      "initiation_hazard_price_response": 0.0,
+      "anticipation_before_waiting": true,
+      "decision_discount_annual": 0.0,
+      "N": 1000.0,
+      "contract_start": "2026-11-15",
+      "contract_years": 10,
+      "death_lapse_eligibility_exit_in_this_normalization": 0.0,
+      "other_behavior_channels_in_this_module": 0.0,
+      "poststart_persistence_effect_in_this_module": 0.0
+    },
+    "select_relative_start_multipliers": [0.5, 1.0, 1.5]
+  },
+  "treatment": {
+    "params_path": "config/treatment.json"
+  },
+  "benefits": {
+    "death": {
+      "display_name_ko": "정기 사망보장",
+      "base_events": 458,
+      "base_person_years": 29112,
+      "published_multiplier": 0.81,
+      "reported_low": 0.71,
+      "reported_high": 0.93,
+      "benefit_krw": 100000000.0,
+      "holding_rate": 1.0,
+      "evidence_note": "SELECT 전체 사망 HR은 위계검정상 탐색적 결과"
+    },
+    "mi": {
+      "display_name_ko": "비치명적 심근경색",
+      "base_events": 322,
+      "base_person_years": 29112,
+      "published_multiplier": 0.72,
+      "reported_low": 0.61,
+      "reported_high": 0.85,
+      "benefit_krw": 10000000.0,
+      "holding_rate": 1.0,
+      "evidence_note": "다중검정 미조정 보조평가변수"
+    },
+    "stroke": {
+      "display_name_ko": "비치명적 뇌졸중",
+      "base_events": 165,
+      "base_person_years": 29112,
+      "published_multiplier": 0.93,
+      "reported_low": 0.74,
+      "reported_high": 1.15,
+      "benefit_krw": 10000000.0,
+      "holding_rate": 1.0,
+      "evidence_note": "다중검정 미조정 보조평가변수"
+    },
+    "gallbladder": {
+      "display_name_ko": "담낭절제술",
+      "select_treated_gallstone_risk": 0.014,
+      "select_placebo_gallstone_risk": 0.011,
+      "select_followup_months": 39.8,
+      "surgery_conversion_rate": 0.20705486265207744,
+      "benefit_krw": 10000000.0,
+      "holding_rate": 1.0,
+      "safwan_rr": 2.59,
+      "safwan_reported_low": 1.40,
+      "safwan_reported_high": 4.82,
+      "safwan_control_events": 13,
+      "safwan_control_n": 1429,
+      "evidence_note": "기준은 SELECT 안전성 누적위험; Safwan RR은 SELECT 기초위험에 적용하는 불리 민감도"
+    }
+  },
+  "one_way_sensitivity": {
+    "death_hr": [1.0, 0.93, 0.81, 0.71],
+    "benefit_effect_years": [1.0, 3.0, 5.0],
+    "mi_hr": [0.61, 0.72, 0.85, 1.0],
+    "stroke_hr": [0.74, 0.93, 1.0, 1.15],
+    "gallstone_scenarios": ["select_base", "rr_1.40", "rr_2.59", "rr_4.82"],
+    "surgery_conversion_rates": [0.10, 0.20705486265207744, 0.35],
+    "exposure_methods": ["on_treatment_published", "on_treatment_adjusted", "itt_window"],
+    "select_relative_start_multipliers": [0.5, 1.0, 1.5],
+    "discount_rates": [0.0275, 0.03, 0.05],
+    "holding_rates": [0.25, 0.5, 1.0],
+    "base_risk_multipliers": [0.75, 1.0, 1.25]
+  },
+  "combined_scenarios": {
+    "favorable": {
+      "display_name_ko": "유리",
+      "death_hr": 0.71,
+      "mi_hr": 0.61,
+      "stroke_hr": 0.74,
+      "gallstone_rr": 1.0,
+      "surgery_conversion_rate": 0.10,
+      "exposure_method": "on_treatment_adjusted"
+    },
+    "base": {
+      "display_name_ko": "기준"
+    },
+    "adverse": {
+      "display_name_ko": "불리",
+      "death_hr": 0.93,
+      "mi_hr": 0.85,
+      "stroke_hr": 1.0,
+      "gallstone_rr": 4.82,
+      "surgery_conversion_rate": 0.35,
+      "exposure_method": "on_treatment_published"
+    },
+    "no_effect": {
+      "display_name_ko": "무효과",
+      "death_hr": 1.0,
+      "mi_hr": 1.0,
+      "stroke_hr": 1.0,
+      "gallstone_rr": 1.0,
+      "exposure_method": "itt_window"
+    }
+  },
+  "legacy_notebook_references": {
+    "death": {
+      "source": "notebooks/impact/01_위고비_사망보장_국내연구.ipynb",
+      "claim_change_krw": -96961864.0,
+      "main_differences": "월 모형, 저·고확산 연 시작률 1%·3%, 할인율 3%, 치료 지속·중단·재개 미적용"
+    },
+    "mi": {
+      "source": "notebooks/impact/02_위고비_심혈관보험금_국내연구.ipynb",
+      "claim_change_krw": -9706245.0,
+      "main_differences": "월 모형, 개별 노트북 시작경로와 노출 정의, 할인율 3%"
+    },
+    "stroke": {
+      "source": "notebooks/impact/02_위고비_심혈관보험금_국내연구.ipynb",
+      "claim_change_krw": -1302874.0,
+      "main_differences": "월 모형, 개별 노트북 시작경로와 노출 정의, 할인율 3%"
+    },
+    "gallbladder": {
+      "source": "notebooks/impact/03_위고비_담낭수술보험금_국내연구.ipynb",
+      "claim_change_krw": 6119385.3826,
+      "main_differences": "Safwan RR 2.59 기준, 개별 시작·치료노출 경로; 공통모형 기준은 SELECT 1.4% 대 1.1%"
+    }
+  }
+}
