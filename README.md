@@ -51,10 +51,11 @@ python -m unittest discover -s tests -v
 - 치료 행태: `base` 시작률을 고정한 지속·재개 13개 시나리오와 확정 보험료 3개의 39개 수지 비교 완료.
 - 상품조건: 지급액 3개×지급한도 3개의 가격·혜택과 시작률 108행·치료 행태 234행 분리 스트레스 비교 완료.
 - MVP: 지급액 10만·15만 원×지급한도 6·13회×대기기간 30·90일의 8개 비교군을 확정하고 팀원 27개 표와 재현 대조 완료.
-- 가입연령: 기본 보험나이 19~69세·10년형·최대 보장종료연령 79세. 70~74세는 5년형 또는 연구, 75~79세는 연구 전용.
+- 가입연령: 보험나이 19~69세는 10년형, 70~74세는 실제 5년 현금흐름을 사용하는 고령 확장형, 75세 이상은 가입 불가·연구 계산 전용. 최대 보장종료연령은 79세.
+- 판매 기준: 목표이익률 10%만 판매 후보 보험료로 사용. 기존 0%·5%는 연구 비교와 회귀검증용으로 보존.
 - 월 순보험료 2,006.86원, 월 영업보험료 2,807.05원(원 단위 올림 2,808원).
 - 목표이익률은 보험료 수입 현가 대비 연구용 현금흐름 이익률이며 세금·자본비용·준비금·투자손익은 제외.
-- 실제 판매 보험료나 IFRS17 보험계약마진이 아닌 연구 가정의 보험료와 경험 수지 결과.
+- 실제 판매 확정 보험료나 IFRS17 보험계약마진이 아닌 연구용 판매 후보 보험료와 경험 수지 결과.
 
 ## 먼저 볼 파일
 - [적용 가정·현금흐름](docs/cashflows.md)
@@ -69,6 +70,9 @@ python -m unittest discover -s tests -v
 - [MVP 8개 추적 결과](data/derived/mvp_product_options_summary.csv)
 - [기본 가입연령 분석 결과](data/derived/issue_age_baseline_results.csv)
 - [연령별 중단률 탐색 결과](data/derived/issue_age_discontinuation_exploratory_results.csv)
+- [70~74세 5년형 80개 결과](data/derived/senior_extension_5year_results.csv)
+- [판매 가입구조 통합 결과](data/derived/sale_product_age_results.csv)
+- [고령 확장형 검증 결과](reports/senior_extension_5year_validation.json)
 - [보험료 결과 스냅샷](reports/base_premium.json)
 - [검증 결과](reports/pricing_validation.json)
 - [수입·지출 현재가치 표](reports/pricing_pv_breakdown.csv)

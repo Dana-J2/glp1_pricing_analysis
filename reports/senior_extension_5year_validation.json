@@ -1,0 +1,81 @@
+{
+  "validation": {
+    "status": "PASS",
+    "checks": [
+      {
+        "check": "고령 확장형 80개 고유 조합",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "판매 규칙·목표이익률",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "달력 기준 5년 경로",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "올림 전 목표이익률 10% 달성",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "대표상품 임시 대조값 재현",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "지원반응 손실 20개·15만 원×13회 한정",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "시작률 복합 스트레스 80개 모두 손실",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "치료행태 복합 스트레스 80개 모두 흑자",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "보험료 범위 2,212~4,558원",
+        "passed": true,
+        "detail": ""
+      }
+    ],
+    "summary": {
+      "row_count": 80,
+      "premium_min_krw": 2212,
+      "premium_max_krw": 4558,
+      "response_high_loss_count": 20,
+      "start_combined_stress_loss_count": 80,
+      "treatment_combined_stress_profit_count": 80
+    }
+  },
+  "output_files": [
+    "data/derived/senior_extension_5year_results.csv",
+    "data/derived/sale_product_age_results.csv"
+  ],
+  "scope": {
+    "products": 8,
+    "issue_ages": [
+      70,
+      71,
+      72,
+      73,
+      74
+    ],
+    "sexes": [
+      "여",
+      "남"
+    ],
+    "term_years": 5,
+    "sale_target_profit_margin": 0.1,
+    "cohort_basis": "initial 1000 policies"
+  }
+}

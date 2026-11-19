@@ -19,8 +19,16 @@ def load_issue_age_rules(path: str | Path = DEFAULT_RULES_PATH) -> dict[str, Any
     rules = json.loads(Path(path).read_text(encoding="utf-8"))
     if rules["age_basis"] != "insurance_age":
         raise ValueError("가입연령 기준은 보험나이여야 합니다")
-    if rules["minimum_issue_age"] > rules["maximum_issue_age"]:
-        raise ValueError("최소·최대 가입연령 순서를 확인하세요")
+    standard = rules["standard_product"]
+    senior = rules["senior_extension_product"]
+    if standard["minimum_issue_age"] > standard["maximum_issue_age"]:
+        raise ValueError("기본형 최소·최대 가입연령 순서를 확인하세요")
+    if senior["minimum_issue_age"] > senior["maximum_issue_age"]:
+        raise ValueError("고령 확장형 최소·최대 가입연령 순서를 확인하세요")
+    if senior["maximum_issue_age"] != rules["maximum_sale_issue_age"]:
+        raise ValueError("최대 판매 가입연령과 고령 확장형 상한이 다릅니다")
+    if not math.isclose(float(rules["sale_target_profit_margin"]), 0.10):
+        raise ValueError("판매 목표이익률은 10%여야 합니다")
     return rules
 
 
@@ -33,25 +41,29 @@ def validate_issue_age(
 ) -> dict[str, Any]:
     """판매 규칙과 연구용 계산 권한을 분리해 검증한다.
 
-    `standard`는 19~69세 10년형, `short_term_extension`은 70~74세
-    최대 5년형, `research`는 명시적으로 선택한 19~79세 연구 계산이다.
-    연구 모드는 판매 가능 여부나 최대 보장종료연령을 변경하지 않는다.
+    `standard`는 19~69세 10년형, `senior_extension`은 70~74세
+    5년형, `research`는 명시적으로 선택한 75~79세 연구 계산이다.
+    연구 모드는 판매 가능 여부를 변경하지 않는다. 기존 호출 호환을 위해
+    `short_term_extension`은 `senior_extension`의 별칭으로만 허용한다.
     """
     rules = rules or load_issue_age_rules()
     if isinstance(issue_age, bool) or not isinstance(issue_age, int):
         raise ValueError("가입연령은 정수 보험나이여야 합니다")
-    if mode not in {"standard", "short_term_extension", "research"}:
+    if mode == "short_term_extension":
+        mode = "senior_extension"
+    if mode not in {"standard", "senior_extension", "research"}:
         raise ValueError("가입연령 검증 모드를 확인하세요")
 
     if mode == "standard":
-        term = rules["term_years"] if term_years is None else term_years
-        if not rules["minimum_issue_age"] <= issue_age <= rules["maximum_issue_age"]:
+        standard = rules["standard_product"]
+        term = standard["term_years"] if term_years is None else term_years
+        if not standard["minimum_issue_age"] <= issue_age <= standard["maximum_issue_age"]:
             raise ValueError("기본 MVP 가입연령은 보험나이 19~69세입니다")
+        if term != standard["term_years"]:
+            raise ValueError("기본 MVP 보험기간은 정확히 10년입니다")
         attained = issue_age + term
         if attained > rules["maximum_attained_age"]:
             raise ValueError("보장종료연령이 최대 79세를 초과합니다")
-        if term != rules["term_years"]:
-            raise ValueError("기본 MVP 보험기간은 10년입니다")
         return {
             "mode": mode,
             "issue_age": issue_age,
@@ -61,13 +73,13 @@ def validate_issue_age(
             "status": "standard_mvp",
         }
 
-    if mode == "short_term_extension":
-        extension = rules["extension_age_70_74"]
+    if mode == "senior_extension":
+        extension = rules["senior_extension_product"]
         term = extension["term_years"] if term_years is None else term_years
         if not extension["minimum_issue_age"] <= issue_age <= extension["maximum_issue_age"]:
-            raise ValueError("5년형 확장 검토 연령은 보험나이 70~74세입니다")
-        if term <= 0 or term > extension["term_years"]:
-            raise ValueError("70~74세 확장형 보험기간은 최대 5년입니다")
+            raise ValueError("고령 확장형 가입연령은 보험나이 70~74세입니다")
+        if term != extension["term_years"]:
+            raise ValueError("70~74세 고령 확장형 보험기간은 정확히 5년입니다")
         attained = issue_age + term
         if attained > rules["maximum_attained_age"]:
             raise ValueError("보장종료연령이 최대 79세를 초과합니다")
@@ -76,14 +88,14 @@ def validate_issue_age(
             "issue_age": issue_age,
             "term_years": term,
             "attained_age": attained,
-            "policy_eligible": False,
-            "status": "short_term_or_research_review",
+            "policy_eligible": True,
+            "status": "senior_extension_5year",
         }
 
     research = rules["research_mode"]
-    term = rules["term_years"] if term_years is None else term_years
-    if not rules["minimum_issue_age"] <= issue_age <= research["maximum_entry_age"]:
-        raise ValueError("연구용 계산 가입연령은 보험나이 19~79세입니다")
+    term = rules["standard_product"]["term_years"] if term_years is None else term_years
+    if not research["minimum_entry_age"] <= issue_age <= research["maximum_entry_age"]:
+        raise ValueError("연구용 계산 가입연령은 보험나이 75~79세입니다")
     if not isinstance(term, int) or term <= 0:
         raise ValueError("연구용 보험기간은 양의 정수여야 합니다")
     return {

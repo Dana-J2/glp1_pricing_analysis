@@ -107,6 +107,8 @@
   "output_files": [
     "data/derived/mvp_product_options_summary.csv",
     "data/derived/issue_age_baseline_results.csv",
-    "data/derived/issue_age_discontinuation_exploratory_results.csv"
+    "data/derived/issue_age_discontinuation_exploratory_results.csv",
+    "data/derived/senior_extension_5year_results.csv",
+    "data/derived/sale_product_age_results.csv"
   ]
 }

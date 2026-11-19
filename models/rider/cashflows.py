@@ -43,6 +43,27 @@ def month_date(start, offset):
     y,m=divmod(n,12);m+=1
     return date(y,m,min(start.day,calendar.monthrange(y,m)[1]))
 
+def truncate_rows_to_policy_term(rows, term_years, start_date=None):
+    """일별 시작률 경로를 계약 주년 전일까지 달력 기준으로 제한한다."""
+    if not rows:raise ValueError('시작 경로')
+    if isinstance(term_years,bool) or not isinstance(term_years,int) or term_years<=0:
+        raise ValueError('보험기간은 양의 정수 연도여야 합니다')
+    first=date.fromisoformat(rows[0]['date']) if start_date is None else start_date
+    if not isinstance(first,date):raise ValueError('계약 시작일')
+    end=month_date(first,12*term_years)
+    expected_days=(end-first).days
+    if len(rows)<expected_days:raise ValueError('시작률 경로가 보험기간보다 짧습니다')
+    truncated=[]
+    for i,row in enumerate(rows[:expected_days]):
+        dt=date.fromisoformat(row['date'])
+        if int(row['elapsed_day'])!=i or dt!=first+timedelta(days=i):
+            raise ValueError('날짜 경로')
+        if dt>=end:raise AssertionError('보험기간 이후 행이 포함되었습니다')
+        truncated.append(row)
+    if date.fromisoformat(truncated[-1]['date'])!=end-timedelta(days=1):
+        raise AssertionError('계약 주년 직전일까지 포함되지 않았습니다')
+    return truncated
+
 def project_cashflows(rows, mortality, settings=CashflowSettings(), treatment=Parameters(), path='yes'):
     """행 마지막 다음날을 만기로 처리. 종료일 행을 추가해 잔여 active를 matured로 옮긴다.
 

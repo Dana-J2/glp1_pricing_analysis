@@ -1,16 +1,22 @@
 {
-  "version": "mvp_issue_age_policy_v1",
+  "version": "mvp_issue_age_policy_v2",
   "age_basis": "insurance_age",
-  "minimum_issue_age": 19,
-  "maximum_issue_age": 69,
-  "term_years": 10,
-  "maximum_attained_age": 79,
-  "extension_age_70_74": {
-    "status": "research_or_short_term",
+  "standard_product": {
+    "minimum_issue_age": 19,
+    "maximum_issue_age": 69,
+    "term_years": 10,
+    "status": "standard_mvp"
+  },
+  "senior_extension_product": {
     "minimum_issue_age": 70,
     "maximum_issue_age": 74,
-    "term_years": 5
+    "term_years": 5,
+    "status": "senior_extension_5year"
   },
+  "maximum_sale_issue_age": 74,
+  "maximum_attained_age": 79,
+  "sale_target_profit_margin": 0.10,
+  "secondary_research_margin": 0.05,
   "age_75_79": {
     "status": "research_only",
     "minimum_issue_age": 75,
@@ -18,6 +24,7 @@
   },
   "research_mode": {
     "explicit_opt_in_required": true,
+    "minimum_entry_age": 75,
     "maximum_entry_age": 79,
     "attained_age_limit_is_not_a_sales_rule_in_research_mode": true
   },
@@ -27,7 +34,8 @@
     "max_claims": 13,
     "waiting_days": 90,
     "decision_horizon_units": 13,
-    "target_profit_margins": [0.05, 0.10]
+    "sale_target_profit_margin": 0.10,
+    "research_target_profit_margins": [0.05, 0.10]
   },
   "evaluation_issue_ages": [19, 29, 44, 59, 60, 64, 69],
   "sexes": ["여", "남"],
