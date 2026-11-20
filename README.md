@@ -359,6 +359,7 @@ GitHub에서 노트북을 열면 실행 결과와 그래프를 함께 확인할 
 | [심혈관 급부 분석](notebooks/impact/02_위고비_심혈관보험금_국내연구.ipynb) | 심근경색·뇌졸중 급부 변화 |
 | [담낭수술 급부 분석](notebooks/impact/03_위고비_담낭수술보험금_국내연구.ipynb) | 담낭절제술 증가와 민감도 |
 | [기존 보험금 종합영향](notebooks/impact/04_위고비_기존보험금_종합영향.ipynb) | 담보별 워터폴, 저·고확산 비교, 결합 시나리오 |
+| [보험사 종합영향](notebooks/impact/05_위고비_보험사_종합영향.ipynb) | 특약 도입 `A→A+B`의 약제비 특약 NPV와 기존 보험금 변화를 결합 |
 | [계약 현금흐름](notebooks/04_계약현금흐름.ipynb) | 일별 계약 상태와 보험료·보험금 흐름 |
 
 ---
@@ -421,6 +422,7 @@ python -m models.rider.treatment_sensitivity
 python -m models.rider.product_comparison --stage full
 python -m models.rider.mvp_age_analysis --build-sale-lookup
 python -m models.impact.existing_claims
+python -m models.impact.insurer_total_impact
 ```
 
 `models.rider.pricing`의 기본 목표이익률 0%는 기존 결과를 확인하기 위한 회귀검증용입니다. 판매 후보 보험료는 `mvp_age_analysis`에서 목표이익률 10%로 생성합니다.
