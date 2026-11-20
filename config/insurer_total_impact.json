@@ -1,76 +1,121 @@
 {
-  "version": "insurer_total_impact_v1",
-  "analysis_name_ko": "약제비 특약과 기존 보험금 변화의 보험사 종합영향",
+  "version": "insurer_total_impact_v2_portfolio",
+  "analysis_name_ko": "약제비 특약과 기존 보험금 변화의 보험사 포트폴리오 종합영향",
   "analysis": {
     "initial_contracts": 1000.0,
-    "term_years": 10,
-    "representative_issue_age": 62,
-    "sex_weights": {
-      "남": 0.72,
-      "여": 0.28
-    },
     "target_profit_margin": 0.1,
-    "pricing_basis": "현재 저장된 49세 여성 기준 목표이익률 10% 원 단위 확정 보험료",
-    "cohort_label": "SELECT 유사 임상위험을 적용한 연구용 종합영향 시나리오",
     "representative_product_id": "benefit100k_max13_wait90",
     "start_scenario": "base",
     "comparison": {
       "without_rider": "A",
       "with_rider": "A+B",
       "market_expansion_reference": "existing_market_low_to_existing_market_high"
+    },
+    "main_result": "base enrollment mix × base coverage holding"
+  },
+  "select_reference_analysis": {
+    "label_ko": "SELECT 유사 대표집단 참고분석",
+    "representative_issue_age": 62,
+    "term_years": 10,
+    "sex_weights": {"남": 0.72, "여": 0.28},
+    "pricing_basis": "기존 49세 여성 기준 목표이익률 10% 원 단위 확정 보험료",
+    "cohort_label": "SELECT 유사 임상위험을 적용한 기존 대표집단 참고분석",
+    "expected_regression": {
+      "representative_fixed_monthly_premium_krw": 3141.0,
+      "representative_rider_npv_krw": 30387622.8283182,
+      "representative_base_existing_claims_adjustment_krw": 316184.95981193613,
+      "representative_base_total_impact_krw": 30703807.788130138
+    }
+  },
+  "portfolio": {
+    "minimum_issue_age": 19,
+    "maximum_issue_age": 74,
+    "standard_term": {"minimum_issue_age": 19, "maximum_issue_age": 69, "term_years": 10},
+    "senior_term": {"minimum_issue_age": 70, "maximum_issue_age": 74, "term_years": 5},
+    "population_reference_period": "2025-12",
+    "eligibility_factors": {
+      "eligible_proxy_rate": 0.1401946571816558,
+      "eligible_proxy_rate_evidence_type": "관측자료_국민건강영양조사_전체성인_공통적용",
+      "nondiabetic_fraction_within_eligible": 0.6627699737666792,
+      "nondiabetic_fraction_evidence_type": "관측자료_국민건강영양조사_전체성인_공통적용",
+      "unused_fraction": 0.95,
+      "unused_fraction_evidence_type": "연구팀_가정",
+      "common_factor_normalization_note": "세 요인이 모든 연령·성별 셀에 동일하므로 정규화된 구성비에는 영향을 주지 않는다."
+    },
+    "select_like_high_risk_share": {
+      "minimum_applicable_age": 45,
+      "maximum_applicable_age": 74,
+      "share": 0.002567531917505798,
+      "weighted_select_proxy": 62238.568315,
+      "weighted_population": 24240644.983522,
+      "evidence_type": "관측자료_국민건강영양조사_기존재집계",
+      "note": "45~79세 재집계 비율을 판매 가능 45~74세에 공통 적용하며, 19~44세에는 SELECT 연령기준상 0을 적용한다."
+    },
+    "enrollment_scenarios": {
+      "base": {
+        "display_name_ko": "기준 구성",
+        "evidence_type": "연구팀_구성규칙",
+        "selection_coefficients": {"19_49": 1.0, "50_59": 1.0, "60_74": 1.0}
+      },
+      "younger_focus": {
+        "display_name_ko": "젊은층 집중",
+        "evidence_type": "연구팀_민감도_가정",
+        "selection_coefficients": {"19_49": 1.25, "50_59": 1.0, "60_74": 0.75}
+      },
+      "older_high_risk_focus": {
+        "display_name_ko": "고령·고위험 집중",
+        "evidence_type": "연구팀_민감도_가정",
+        "selection_coefficients": {"19_49": 0.75, "50_59": 1.0, "60_74": 1.25}
+      }
     }
   },
   "inputs": {
     "mvp_product_config": "config/mvp_product_options.json",
     "fixed_premium_results": "outputs/mvp_issue_age_analysis/run_summary.json",
+    "sale_product_age_lookup": "data/derived/sale_product_age_lookup.csv",
+    "population_age_sex": "data/reference/kosis_population_age_sex_2025.csv",
+    "nondiabetic_population": "data/reference/nondiabetic_population.json",
     "existing_claims_config": "config/existing_claims_impact.json",
     "market_expansion_claim_results": "outputs/existing_claims_impact/base_claim_pv_results.csv",
     "cashflow_config": "config/cashflows.json",
     "treatment_config": "config/treatment.json"
   },
   "coverage_scenarios": {
-    "low": {
-      "display_name_ko": "낮음",
-      "death": 0.15,
-      "mi": 0.3,
-      "stroke": 0.3,
-      "gallbladder": 0.2
-    },
-    "base": {
-      "display_name_ko": "기준",
-      "death": 0.214,
-      "mi": 0.4,
-      "stroke": 0.4,
-      "gallbladder": 0.25
-    },
-    "high": {
-      "display_name_ko": "높음",
-      "death": 0.306,
-      "mi": 0.5,
-      "stroke": 0.5,
-      "gallbladder": 0.4
-    }
+    "low": {"display_name_ko": "낮음", "death": 0.15, "mi": 0.3, "stroke": 0.3, "gallbladder": 0.2},
+    "base": {"display_name_ko": "기준", "death": 0.214, "mi": 0.4, "stroke": 0.4, "gallbladder": 0.25},
+    "high": {"display_name_ko": "높음", "death": 0.306, "mi": 0.5, "stroke": 0.5, "gallbladder": 0.4}
   },
-  "benefit_amounts_krw": {
-    "death": 100000000.0,
-    "mi": 10000000.0,
-    "stroke": 10000000.0,
-    "gallbladder": 10000000.0
-  },
+  "benefit_amounts_krw": {"death": 100000000.0, "mi": 10000000.0, "stroke": 10000000.0, "gallbladder": 10000000.0},
   "benefit_amount_multipliers": [0.5, 1.0, 1.5],
   "sources": {
+    "population_age_sex": {
+      "name": "KOSIS 행정구역(시군구)별/1세별 주민등록인구",
+      "table_id": "DT_1B04006",
+      "reference_period": "2025-12",
+      "url": "https://kosis.kr/statisticsList/mass/mass_list.jsp?org_id=101&process=statHtml&tbl_id=DT_1B04006",
+      "evidence_type": "관측자료",
+      "note": "전국 19~74세 남녀 주민등록인구"
+    },
+    "eligibility_and_nondiabetic": {
+      "name": "국민건강영양조사 2024 저장소 재집계",
+      "path": "data/reference/nondiabetic_population.json",
+      "evidence_type": "관측자료",
+      "note": "연령·성별 세분값이 없어 전체 성인 비율을 각 셀에 공통 적용"
+    },
+    "unused_fraction": {"name": "위고비 미사용 95%", "path": "config/start_scenarios.json", "evidence_type": "연구팀 가정"},
     "death_holding_rates": {
       "url": "https://www.kiri.or.kr/pdf/연구자료/연구보고서/nre2018-12_02.pdf",
-      "note": "보험연구원 2018 보험소비자 설문조사의 사망보험 개인 가입률: 60대 이상 15.0%, 전체 21.4%, 50대 30.6%"
+      "note": "보험연구원 2018 보험소비자 설문조사의 사망보험 개인 가입률"
     },
     "health_and_surgery_holding_ranges": {
       "url": "https://www.findatamall.or.kr/market/dataProdDetail?gdsSn=2402&menuNo=28",
-      "note": "한화손해보험 고객유형별 장기보험 담보 가입현황 공개 표본의 뇌·심·질병수술비 관찰범위를 단순화한 연구 가정"
+      "note": "공개 담보자료 관찰범위를 단순화한 연구 가정"
     }
   },
   "interpretation": {
-    "portfolio_note": "실제 특정 보험사의 보유율을 추정한 것이 아니라, 공식 생명보험 가입률과 실제 보험사 공개 담보자료의 관찰범위 안에서 만든 공개자료 기반 대리 포트폴리오 시나리오이다.",
-    "dependence_note": "담보 보유와 사건위험은 독립으로 가정하고 기대보험금을 선형 합산한다. 담보 간 상관은 손실분포와 요구자본 분석 항목이므로 제외한다.",
+    "portfolio_note": "실제 특정 보험사의 판매구성이 아니라 KOSIS 인구와 가용 적격 대리비율에 가입선택계수를 적용한 연구용 포트폴리오다.",
+    "clinical_rate_note": "연령별 임상 사건률이 없어 SELECT 전체 사건률을 공통 적용하며 연령별 정밀 추정으로 해석하지 않는다.",
+    "dependence_note": "담보 보유와 사건위험은 독립으로 가정하고 기대보험금을 선형 합산한다.",
     "accounting_note": "실제 회계이익이나 IFRS17 이익이 아니라 세금·자본비용·투자손익을 제외한 연구용 기대손익 NPV이다."
   }
 }
