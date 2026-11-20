@@ -372,7 +372,7 @@ glp1_pricing_analysis/
 │   ├── reference/           # 사망률·치료 근거·대상 인구
 │   └── derived/             # 판매보험료와 분석 결과표
 ├── docs/
-│   ├── product/             # 사업방법서·산출방법서
+│   ├── product/             # 사업방법서·보험료 산출방법서·특별약관
 │   └── ...                  # 분석별 계산 규칙과 한계
 ├── models/
 │   ├── start_rate/          # 최초 치료 시작률
@@ -385,12 +385,11 @@ glp1_pricing_analysis/
 └── outputs/                 # 실행 시 생성되는 상세 결과, Git 제외
 ```
 
-### 주요 상품 문서
+### 기초서류
 
-- [사업방법서 Markdown](docs/product/WE_GO_FIT_사업방법서.md)
-- [사업방법서 DOCX](docs/product/WE_GO_FIT_사업방법서.docx)
-- [사업방법서 PDF](docs/product/WE_GO_FIT_사업방법서.pdf)
-- [보험료 산출방법서](docs/product/WE_GO_FIT_산출방법서.md)
+- [WE GO FIT 사업방법서](docs/product/WE_GO_FIT_사업방법서.pdf)
+- [WE GO FIT 보험료 산출방법서](docs/product/WE_GO_FIT_보험료_산출방법서.pdf)
+- [WE GO FIT 위고비 조제비 지원 특별약관](docs/product/WE_GO_FIT_위고비_조제비_지원_특별약관_무배당.pdf)
 
 ### 주요 결과 데이터
 
