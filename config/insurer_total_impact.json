@@ -45,15 +45,19 @@
     "select_like_high_risk_share": {
       "minimum_applicable_age": 45,
       "maximum_applicable_age": 74,
-      "share": 0.002567531917505798,
+      "share": 0.029086934837443106,
+      "general_population_share": 0.002567531917505798,
+      "conditioning_denominator_rate": 0.08827096879938888,
+      "conditioning_formula": "general_population_share / (eligible_proxy_rate × nondiabetic_fraction_within_eligible × unused_fraction)",
       "weighted_select_proxy": 62238.568315,
       "weighted_population": 24240644.983522,
-      "evidence_type": "관측자료_국민건강영양조사_기존재집계",
-      "note": "45~79세 재집계 비율을 판매 가능 45~74세에 공통 적용하며, 19~44세에는 SELECT 연령기준상 0을 적용한다."
+      "weighted_eligible_nondiabetic_unused_proxy": 2139745.2170175333,
+      "evidence_type": "조건부_대리치_전체성인공통비율",
+      "note": "45~79세 일반인구 기준 SELECT 유사 비중을 전체 성인 공통 적격률·비당뇨 비율·미사용 비율로 나눈 조건부 대리치다. 판매 가능 45~74세에 공통 적용하고 19~44세에는 0을 적용한다. 연령별 직접 관측값이 아니다."
     },
     "enrollment_scenarios": {
       "base": {
-        "display_name_ko": "기준 구성",
+        "display_name_ko": "국내 일반인구 구성 대리",
         "evidence_type": "연구팀_구성규칙",
         "selection_coefficients": {"19_49": 1.0, "50_59": 1.0, "60_74": 1.0}
       },
@@ -63,7 +67,7 @@
         "selection_coefficients": {"19_49": 1.25, "50_59": 1.0, "60_74": 0.75}
       },
       "older_high_risk_focus": {
-        "display_name_ko": "고령·고위험 집중",
+        "display_name_ko": "고령층 집중",
         "evidence_type": "연구팀_민감도_가정",
         "selection_coefficients": {"19_49": 0.75, "50_59": 1.0, "60_74": 1.25}
       }

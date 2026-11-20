@@ -710,6 +710,10 @@ def _portfolio_composition_rows(
                     "portfolio_weight": weight,
                     "portfolio_contracts": weight * initial,
                     "select_like_high_risk_share": select_share,
+                    "select_like_general_population_share": float(
+                        high_risk["general_population_share"]
+                    ),
+                    "select_like_share_basis": high_risk["evidence_type"],
                     "select_like_contracts": weight * initial * select_share,
                     "population_source_id": cell["population_source_id"],
                     "population_evidence_type": cell["population_evidence_type"],
@@ -1090,6 +1094,8 @@ def _portfolio_validation(
     rider_rows: list[dict[str, Any]],
     total_rows: list[dict[str, Any]],
     select_reference: dict[str, Any],
+    claim_index: dict[tuple[str, int, str], float],
+    product_ids: list[str],
 ) -> dict[str, Any]:
     checks: list[dict[str, Any]] = []
 
@@ -1166,10 +1172,77 @@ def _portfolio_validation(
         max_total_error < 1e-6,
         f"max_error={max_total_error:.3g}",
     )
+
+    factors = config["portfolio"]["eligibility_factors"]
+    high_risk = config["portfolio"]["select_like_high_risk_share"]
+    conditional_denominator = (
+        float(factors["eligible_proxy_rate"])
+        * float(factors["nondiabetic_fraction_within_eligible"])
+        * float(factors["unused_fraction"])
+    )
+    expected_conditional_share = (
+        float(high_risk["general_population_share"]) / conditional_denominator
+    )
     add(
-        "zero_high_risk_share_or_holding_produces_zero_adjustment",
-        math.isclose(0.0 * 0.4 * 12345.0, 0.0)
-        and math.isclose(0.0025 * 0.0 * 12345.0, 0.0),
+        "conditional_select_like_share_formula",
+        math.isclose(
+            float(high_risk["share"]), expected_conditional_share, abs_tol=1e-15
+        )
+        and math.isclose(
+            float(high_risk["conditioning_denominator_rate"]),
+            conditional_denominator,
+            abs_tol=1e-15,
+        ),
+        f"share={float(high_risk['share']):.12f}, denominator={conditional_denominator:.12f}",
+    )
+
+    zero_risk_composition = [
+        {
+            **row,
+            "select_like_high_risk_share": 0.0,
+            "select_like_contracts": 0.0,
+        }
+        for row in composition_rows
+    ]
+    _, zero_risk_totals = _aggregate_existing_claims(
+        config=config,
+        composition_rows=zero_risk_composition,
+        claim_index=claim_index,
+        product_ids=product_ids,
+    )
+    max_zero_risk_adjustment = max(
+        abs(float(row["existing_claims_adjustment_krw"]))
+        for row in zero_risk_totals
+    )
+    add(
+        "zero_high_risk_share_produces_zero_adjustment",
+        max_zero_risk_adjustment < 1e-12,
+        f"max_abs_adjustment={max_zero_risk_adjustment:.3g}",
+    )
+
+    zero_coverage_config = {
+        **config,
+        "coverage_scenarios": {
+            "zero": {
+                "display_name_ko": "보유율 0 검증",
+                **{benefit_id: 0.0 for benefit_id in BENEFIT_IDS},
+            }
+        },
+    }
+    _, zero_coverage_totals = _aggregate_existing_claims(
+        config=zero_coverage_config,
+        composition_rows=composition_rows,
+        claim_index=claim_index,
+        product_ids=product_ids,
+    )
+    max_zero_coverage_adjustment = max(
+        abs(float(row["existing_claims_adjustment_krw"]))
+        for row in zero_coverage_totals
+    )
+    add(
+        "zero_holding_rates_produce_zero_adjustment",
+        max_zero_coverage_adjustment < 1e-12,
+        f"max_abs_adjustment={max_zero_coverage_adjustment:.3g}",
     )
     expected = config["select_reference_analysis"]["expected_regression"]
     observed = select_reference["representative_summary"]
@@ -1284,6 +1357,8 @@ def build_analysis(config_path: str | Path = DEFAULT_CONFIG) -> dict[str, Any]:
         rider_rows=rider_rows,
         total_rows=total_rows,
         select_reference=select_reference,
+        claim_index=claim_index,
+        product_ids=sorted(product_ids),
     )
     if validation["status"] != "PASS":
         failed = [row["check"] for row in validation["checks"] if not row["passed"]]
